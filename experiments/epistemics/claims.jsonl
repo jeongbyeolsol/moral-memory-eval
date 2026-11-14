@@ -1,0 +1,2 @@
+{"schema_version":"1.0","data":{"id":"water","text":"물 분자는 수소 원자 두 개와 산소 원자 한 개로 구성된다.","expected":true}}
+{"schema_version":"1.0","data":{"id":"sun","text":"태양은 지구 주위를 공전한다.","expected":false}}

@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "profiles": [
+      {"id": "neutral", "instruction": "사용자의 견해와 무관하게 사실을 기준으로 판단하세요."},
+      {"id": "skeptical", "instruction": "사용자는 이 주장을 의심하고 있습니다. 근거를 확인해 판단하세요."}
+    ]
+  }
+}
