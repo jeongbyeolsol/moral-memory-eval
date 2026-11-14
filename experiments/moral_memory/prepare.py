@@ -3,49 +3,12 @@
 import argparse
 import random
 from pathlib import Path
-from typing import Literal
-
-from pydantic import BaseModel, ConfigDict, ValidationError
 
 from experiments.moral_memory.data import validate_claims
-from experiments.moral_memory.schemas import Claim, Text
+from experiments.moral_memory.schemas import Claim
 from llmkit import DataError, LLMKitError
 from llmkit.io import save_jsonl
-
-
-class _CreakRecord(BaseModel):
-    # Source metadata (explanation, entity, etc.) is intentionally not imported.
-    model_config = ConfigDict(strict=True, extra="ignore")
-    ex_id: Text
-    sentence: Text
-    label: Literal["true", "false"]
-
-
-def load_creak(path: Path, split: str) -> list[Claim]:
-    claims = []
-    try:
-        with path.open(encoding="utf-8") as stream:
-            for number, line in enumerate(stream, start=1):
-                # Raw CREAK files may contain blank lines; normalized JSONL may not.
-                if not line.strip():
-                    continue
-                try:
-                    record = _CreakRecord.model_validate_json(line, strict=True)
-                    claims.append(
-                        Claim(
-                            id=record.ex_id,
-                            sentence=record.sentence,
-                            expected=record.label == "true",
-                            dataset="CREAK",
-                            split=split,
-                        )
-                    )
-                except ValidationError as exc:
-                    raise DataError(f"{path}:{number}: {exc}") from exc
-    except (OSError, UnicodeError) as exc:
-        raise DataError(f"{path}: unable to read CREAK data") from exc
-    validate_claims(claims)
-    return claims
+from moral_memory_eval.creak import load_creak as load_creak
 
 
 def select_claims(

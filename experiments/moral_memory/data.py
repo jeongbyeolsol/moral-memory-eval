@@ -3,16 +3,8 @@
 from pathlib import Path
 
 from experiments.moral_memory.schemas import Claim, Profiles
-from llmkit import DataError
 from llmkit.io import load_json, load_jsonl
-
-
-def validate_claims(claims: list[Claim]) -> None:
-    if not claims:
-        raise DataError("At least one claim is required")
-    ids = [claim.id for claim in claims]
-    if len(ids) != len(set(ids)):
-        raise DataError("Claim IDs must be unique")
+from moral_memory_eval.creak import validate_claims as validate_claims
 
 
 def load_inputs(profiles_path: Path, claims_path: Path) -> tuple[Profiles, list[Claim]]:

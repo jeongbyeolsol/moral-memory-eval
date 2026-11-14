@@ -23,5 +23,10 @@ outputs/
 .vscode/
 
 
-# datalink
-/dataset
+# External dataset symlink (selected_data remains eligible for Git tracking)
+/dataset/creak
+
+# Generated API inputs
+/inputs/generated/
+
+/_old_*

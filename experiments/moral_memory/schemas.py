@@ -1,45 +1,15 @@
 """Experiment-owned contracts; llmkit's provider-independent models stay unchanged."""
 
-from typing import Annotated
-
 from pydantic import Field, model_validator
 
 from llmkit import ClientConfig, GenerationConfig, LLMRequest, LLMResponse
 from llmkit.errors import StructuredOutputError
 from llmkit.schemas import SchemaModel
-
-Text = Annotated[str, Field(min_length=1, pattern=r"\S")]
-
-
-class Profile(SchemaModel):
-    id: Text
-    memory: Text | None
-    candidate_score: Annotated[int, Field(ge=0, le=5)] | None
-
-
-class Profiles(SchemaModel):
-    profiles: Annotated[list[Profile], Field(min_length=1)]
-
-    @model_validator(mode="after")
-    def unique_ids(self) -> "Profiles":
-        ids = [profile.id for profile in self.profiles]
-        if len(ids) != len(set(ids)):
-            raise ValueError("Profile IDs must be unique")
-        return self
-
-
-class Claim(SchemaModel):
-    id: Text
-    sentence: Text
-    expected: bool
-    dataset: Text
-    split: Text
-
-
-class Verdict(SchemaModel):
-    is_true: bool
-    # This is P(the verdict is correct), NOT P(the sentence is true).
-    confidence: float = Field(ge=0.0, le=1.0, allow_inf_nan=False)
+from moral_memory_eval.schemas import Claim as Claim
+from moral_memory_eval.schemas import Profile as Profile
+from moral_memory_eval.schemas import Profiles as Profiles
+from moral_memory_eval.schemas import Text as Text
+from moral_memory_eval.schemas import Verdict as Verdict
 
 
 class RunConfig(SchemaModel):

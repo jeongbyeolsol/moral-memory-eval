@@ -25,6 +25,95 @@ GEMINI_MODEL=
 
 `--model`을 지정하면 환경변수보다 우선합니다. 기존 환경변수는 `.env`보다 우선하며, 키는 결과에 저장하지 않습니다. 실행 가능한 모델 ID를 사용하세요.
 
+## 오프라인 데이터 준비 파이프라인
+
+`src/moral_memory_eval/`의 `sample`과 `prepare`는 API 키 없이 실행하며 LLM을 호출하지 않습니다. 문항을 선정해 보존한 뒤, 같은 파일을 여러 프로필 조건에 재사용합니다. 아래 명령은 프로젝트 루트 기준입니다.
+
+```text
+dataset/creak/                         외부 원본 심볼릭 링크, 읽기 전용
+    ↓ sample
+dataset/selected_data/*.jsonl          고정 선정 문항
+                       *.meta.json    시드·문항 ID·제외 ID·원본 및 선정 파일 SHA-256
+    ↓ prepare + configs/profiles.json
+inputs/generated/<name>/
+    requests.jsonl                    LLMRequest만 포함
+    manifest.jsonl                    정답·식별자·인덱스·요청 내용 해시
+    preparation.json                  프로필·문항·생성 설정 스냅샷과 두 파일의 해시
+```
+
+실제 로컬 원본 이름은 `dev.jsonl`, `train.jsonl`입니다. 원본 배포본처럼 확장자가 `.json`인 JSONL도 같은 로더로 읽을 수 있습니다. 이름을 자동으로 바꾸거나 원본 파일·심볼릭 링크를 수정하지 않습니다.
+
+### 1. 예비·본실험 문항 선정 및 보존
+
+```bash
+python -m moral_memory_eval.cli sample \
+  --source dataset/creak/dev.jsonl --split dev \
+  --n-true 3 --n-false 3 --seed 42 \
+  --output dataset/selected_data/pilot_claims.jsonl
+
+python -m moral_memory_eval.cli sample \
+  --source dataset/creak/dev.jsonl --split dev \
+  --n-true 15 --n-false 15 --seed 42 \
+  --exclude-claims dataset/selected_data/pilot_claims.jsonl \
+  --output dataset/selected_data/main_claims.jsonl
+```
+
+`--exclude-claims`에 여러 선정 파일을 지정할 수 있습니다. 각 파일의 `.meta.json`도 필요하며, 해시와 스키마를 검증한 뒤 ID를 제외합니다. 참·거짓 개수는 각각 0 이상이고 합은 1 이상이어야 합니다. 중복 ID, 부족한 문항 수, 잘못된 입력은 오류입니다. 같은 원본 순서·시드·설정과 같은 Python/코드 버전에서 같은 순서로 선정됩니다.
+
+선정 파일과 메타데이터는 임시 디렉터리에서 저장·재읽기·검증한 뒤 기존 파일을 덮어쓰지 않는 방식으로 게시합니다. 메타데이터를 마지막에 게시하며 두 파일이 모두 검증되어야 정상 선정으로 취급합니다. 저장 실패 시 이번에 게시한 파일만 회수하고 기존 선정 파일은 보존합니다. 강제 종료로 파일 하나만 남은 경우에도 불완전한 선정을 오류로 처리하고 자동 삭제·재추출하지 않습니다. 바꾸려면 새 파일명을 사용하세요.
+
+현재 위 이름의 예비 6문항·본실험 30문항을 이미 생성했습니다. 재실행하면 기존 파일 오류가 발생하는 것이 정상입니다. 아래 검증 명령으로 재사용하고, 새 선정이 필요하면 다른 출력 이름을 지정하세요. 무작위 선정은 난이도·모호성 검토를 대신하지 않습니다.
+
+### 2. 프로필 선택과 요청 생성
+
+`configs/profiles.json`에 프로필을 관리합니다. 현재 파일은 기존 샘플인 `candidate_0`, `candidate_5`, `no_profile` 3개를 보존한 것이며 전체 0~5 후보 6개를 임의로 생성하지 않았습니다. 실제 후보를 추가한 뒤에도 `--profile-ids`로 선택한 조건만 사용합니다. 중복·알 수 없는 ID는 오류입니다.
+
+```bash
+python -m moral_memory_eval.cli prepare \
+  --claims dataset/selected_data/main_claims.jsonl \
+  --profiles configs/profiles.json \
+  --profile-ids candidate_0 candidate_5 no_profile \
+  --repeats 2 --seed 42 \
+  --output-dir inputs/generated/main-v1
+```
+
+문항 30개 × 선택 프로필 3개 × 반복 2회 = 180개 요청입니다. `--profile-ids candidate_5 no_profile`처럼 일부만 선택할 수도 있습니다. `--seed`를 생략하면 문항→프로필→반복 순서이며, 지정하면 전체 케이스를 시드 기반으로 섞습니다. 반복 인덱스와 요청 인덱스는 0부터 시작합니다. 기본 `max_output_tokens`는 256이고 `temperature`는 강제하지 않습니다. `--max-output-tokens`, `--temperature`로 변경할 수 있습니다.
+
+`prepare`는 저장된 선정 파일과 메타데이터만 읽으며 CREAK 원본을 다시 읽거나 샘플링하지 않습니다. 메타데이터의 원본 경로는 쓰기 금지 구역 판정에만 사용합니다. 공통 프롬프트는 `src/moral_memory_eval/prompts.py`에서 관리합니다. 정답·도덕성 점수·식별자는 LLM 메시지에 넣지 않습니다.
+
+`manifest.jsonl`은 `trial_id`, `claim_id`, `profile_id`, `expected`, `repeat_index`, `prompt_version`, `request_index`, `request_sha256`을 저장합니다. `trial_id`는 전체 설정의 정규화 해시와 요청 인덱스로 계산하므로, 같은 입력·프로필 선택 순서·설정·시드에서 안정적으로 재생성됩니다. 요청 해시는 `LLMRequest.model_dump(mode="json")`을 키 정렬·공백 없는 JSON·UTF-8로 직렬화한 SHA-256이며, 파일의 바이트 해시와 구별합니다.
+
+추가 파일 `preparation.json`은 선택한 프로필·문항·설정의 스냅샷과 입력·출력 파일 해시를 보존합니다. 이 파일을 사용해 원본 CREAK나 프로필 설정 파일이 없어도 케이스 전체와 대응 관계를 재검증할 수 있습니다. 세 파일을 임시 디렉터리에서 함께 검증한 뒤 디렉터리 단위로 게시합니다. 최종 경로가 이미 있으면 비어 있어도 중단합니다. 같은 출력 경로를 병행 작성하지 마세요.
+
+기존 `examples/file_chat.py`는 생성된 `requests.jsonl`을 읽을 수 있습니다. 다만 이 예제는 manifest와 결과를 자동 연결하거나 `Verdict` 응답 스키마를 API에 전달하지 않습니다. 이번 단계는 요청 생성·대응 정보 보존까지이며 완전한 결과 매칭은 별도 작업입니다. 앞선 `experiments.moral_memory.run`은 구조화된 응답을 지원하는 직접 실행 경로로 유지됩니다. 요청 파일에는 응답을 JSON으로 요구하는 지침이 포함되어 있습니다.
+
+### 3. 무결성과 중복 검증
+
+```bash
+python -m moral_memory_eval.cli verify-selection \
+  --claims dataset/selected_data/main_claims.jsonl \
+  --against dataset/selected_data/pilot_claims.jsonl \
+  --source dataset/creak/dev.jsonl
+
+python -m moral_memory_eval.cli verify-prepared \
+  --input-dir inputs/generated/main-v1
+```
+
+첫 명령은 선정 파일·메타데이터 일치와 예비/본실험 ID 중복을 검증합니다. `--source`를 지정한 경우에만 원본 파일 해시도 다시 읽어 확인합니다. 둘째 명령은 파일 해시, 스키마, 레코드 수, 전체 조합, 순서, 요청 해시 및 manifest 내용을 설정 스냅샷으로 재검증합니다. 검증은 파일을 수정하지 않습니다. SHA-256은 파일 변경 감지용이며 디지털 서명이나 외부 백업은 아닙니다.
+
+현재 생성 결과는 예비 `inputs/generated/pilot-v1`의 36개 요청과 본실험 `inputs/generated/main-v1`의 180개 요청입니다. 두 선정 집합은 중복되지 않습니다. 이 조건은 파이프라인 검증용이며 본실험 설계 확정을 의미하지 않습니다. 실제 LLM API 호출은 수행하지 않았습니다.
+
+### 4. Git 관리
+
+외부 링크 `/dataset/creak`, 생성 요청 `/inputs/generated/`, 실행 결과 `/outputs/`는 Git에서 제외합니다. `dataset/selected_data/`와 `configs/profiles.json`은 추적할 수 있습니다.
+
+```bash
+git status --short --untracked-files=all dataset/selected_data configs
+git check-ignore -v dataset/creak inputs/generated/main-v1
+```
+
+선정 데이터의 Git 추가·커밋·push는 사용자가 결정합니다. 로컬 파일은 원격 push 전까지 원격 백업된 것이 아닙니다. 공개 저장소에 재배포하기 전에는 CREAK의 재배포 조건을 확인하세요. 키와 `.env`는 추적하지 않습니다.
+
 ## 입력 준비
 
 기본 경로는 `experiments/moral_memory/profiles.json`과 `claims.jsonl`입니다. 두 파일 모두 기존 `llmkit.io`의 `schema_version: "1.0"` 형식을 사용합니다.
@@ -53,17 +142,19 @@ GEMINI_MODEL=
 
 `claims.jsonl`에는 로컬 CREAK dev의 `dev_0`(거짓), `dev_5`(참)를 동작 확인용으로 넣었습니다. ID·명제·정답·데이터셋·split은 모두 필수입니다. 중복 ID, 누락 필드, 잘못된 타입, 빈 입력을 거부합니다. 문항 선정과 정답의 적절성은 본실험 전에 검토하세요.
 
-### 원본 CREAK 변환
+### 기존 변환 예제 (호환 경로)
 
-로컬 `dataset/dev.json`은 JSONL 형식입니다. 변환기는 필수 `ex_id`, `sentence`, 문자열 `label`(`"true"` / `"false"`)을 검증하고 `Claim`으로 변환합니다. 원본의 설명·엔티티 등 추가 메타데이터는 의도적으로 가져오지 않습니다. 원본의 빈 줄은 건너뛰며, 라벨이 없는 테스트 파일은 거부합니다. 원본 데이터는 수정하지 않습니다.
+영구 선정 데이터에는 위의 새 `sample` 명령을 사용합니다. 다음 기존 명령은 메타데이터를 만들지 않으므로 새 `prepare`에 바로 사용할 수 없습니다.
+
+로컬 `dataset/creak/dev.jsonl`은 JSONL 형식입니다. 변환기는 필수 `ex_id`, `sentence`, 문자열 `label`(`"true"` / `"false"`)을 검증하고 `Claim`으로 변환합니다. 원본의 설명·엔티티 등 추가 메타데이터는 의도적으로 가져오지 않습니다. 원본의 빈 줄은 건너뛰며, 라벨이 없는 테스트 파일은 거부합니다. 원본 데이터는 수정하지 않습니다.
 
 ```bash
 # 시드에 따라 참 15개·거짓 15개를 선택 (난이도나 적절성의 자동 검토는 아님)
-python -m experiments.moral_memory.prepare dataset/dev.json --split dev \
+python -m experiments.moral_memory.prepare dataset/creak/dev.jsonl --split dev \
   --per-label 15 --seed 42 --output inputs/creak-selected.jsonl
 
 # 연구자가 검토한 ID를 직접 지정하고, 지정 순서로 저장
-python -m experiments.moral_memory.prepare dataset/dev.json --split dev \
+python -m experiments.moral_memory.prepare dataset/creak/dev.jsonl --split dev \
   --ids dev_0 dev_5 --output inputs/creak-reviewed.jsonl
 ```
 
@@ -165,7 +256,7 @@ python -m experiments.moral_memory.analyze outputs/run-001.jsonl \
 
 ## 스키마 수정
 
-실험별 입력·출력·결과는 `experiments/moral_memory/schemas.py`, 프롬프트 변환은 `prompts.py`에서 관리합니다. 별도 프로젝트의 필드는 해당 프로젝트 모델과 로더에 추가하고 범용 `LLMRequest`에는 추가하지 않습니다. 구조화된 응답을 바꾸면 `Verdict`, 프롬프트 지침, 실행 코드, 분석 함수와 검증 테스트를 함께 확인하고 `PROMPT_VERSION`을 갱신하세요.
+공유 입력·판정·전처리 메타데이터는 `src/moral_memory_eval/schemas.py`, 프롬프트는 같은 패키지의 `prompts.py`에서 관리합니다. 기존 실험의 import 경로는 이 정의를 재노출하며, 실행 결과·분석 모델은 `experiments/moral_memory/schemas.py`에 유지합니다. 별도 프로젝트의 필드는 해당 프로젝트 모델과 로더에 추가하고 범용 `LLMRequest`에는 추가하지 않습니다. 구조화된 응답을 바꾸면 `Verdict`, 프롬프트 지침, 실행 코드, 분석 함수와 검증 테스트를 함께 확인하고 `PROMPT_VERSION`을 갱신하세요.
 
 저장 데이터 구조를 바꿀 때는 버전 정책과 기존 파일의 마이그레이션을 함께 설계합니다. 현재 범용 로더는 `1.0`만 기본 지원하므로 파일의 버전 문자열만 바꾸면 오류가 납니다. 과거 형식은 `load_json` / `load_jsonl`의 `migrations=`에 현재 모델로 변환하는 함수를 전달하는 방식으로 처리합니다. 자세한 API는 보존된 [범용 문서](_mdfiles/README.md)를 참고하세요.
 
