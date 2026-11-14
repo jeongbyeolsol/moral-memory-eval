@@ -190,6 +190,24 @@ def migrate_v01(record: dict[str, Any]) -> dict[str, Any]:
 
 변환 결과도 현재 모델로 검증합니다. 여러 과거 버전은 각각 현재 형식으로 직접 변환하는 함수를 등록합니다. 실제 저장 필드의 의미나 구조를 바꿀 때는 버전을 올리고, 마이그레이션·호환성 테스트를 추가합니다. 내부 모델을 바꾸면 `LLMClient`, 제공자 어댑터, 입출력 모델, 실험 결과 모델, 분석 함수의 영향을 함께 확인합니다.
 
+## 스키마 수정 및 적용
+
+프로젝트별 데이터 모델은 `experiments/<name>/schemas.py`에 Pydantic으로 정의합니다. `extra="forbid"`, `strict=True`를 설정하고 필드의 이름·타입·필수 여부를 명시합니다. 여러 프로젝트에서 공통으로 사용하는 요청·응답 계약을 변경할 때는 `src/llmkit/schemas.py`를 수정합니다.
+
+| 변경 대상 | 적용 방법 |
+| --- | --- |
+| 입력 데이터 | `load_json(path, MyInput)` 또는 `load_jsonl(path, MyInput)`로 검증하고 실행 코드에서 `LLMRequest`로 변환합니다. |
+| LLM 답변 형식 | `client.generate(request, response_model=MyAnswer)`로 스키마를 전달하고 `response.parse(MyAnswer)`로 검증된 객체를 얻습니다. |
+| 저장 결과 | 결과용 Pydantic 모델을 정의하고 `save_json` / `save_jsonl`에 전달합니다. 읽을 때도 같은 모델을 지정합니다. |
+
+`examples/file_chat.py`의 입력 스키마는 `LLMRequest`로 고정되어 있습니다. 프로젝트별 필드를 추가했다면 해당 프로젝트의 로더·실행 코드에서 변환해야 하며, JSON 파일만 수정해서 임의의 스키마를 적용할 수는 없습니다.
+
+기존 저장 형식을 변경할 때는 다음을 함께 처리합니다.
+
+1. 버전을 올릴 경우 `llmkit.io`의 `SCHEMA_VERSION`과 `_Record.schema_version`의 허용 값을 함께 수정합니다. 현재 버전은 `1.0`이며, 파일의 버전 값만 바꾸면 미지원 버전 오류가 발생합니다.
+2. 위의 마이그레이션 예시처럼 구버전 데이터를 현재 형식으로 변환하는 함수를 작성하고, 읽는 코드의 `migrations=`에 등록합니다. 누락된 필수값을 임의로 채우지 않습니다.
+3. 변경된 필드를 사용하는 실행·분석 코드도 확인하고, 정상 입력·필수 필드 누락·잘못된 타입·구버전 호환성 테스트를 추가합니다. `python -m pytest -q`로 검증합니다.
+
 ## 오류와 재시도
 
 호출자는 `LLMKitError`로 패키지 오류를 처리하거나 아래 오류를 개별적으로 처리할 수 있습니다.
