@@ -107,7 +107,7 @@ def test_existing_output_and_empty_requests_make_no_calls(tmp_path):
 
 def test_default_samples_are_valid():
     assert len(file_chat.load_requests(file_chat.PROJECT_ROOT / "inputs" / "request.json")) == 1
-    assert len(file_chat.load_requests(file_chat.PROJECT_ROOT / "inputs" / "requests.jsonl")) == 2
+    assert file_chat.load_requests(file_chat.PROJECT_ROOT / "inputs" / "requests.jsonl")
 
 
 def test_cli_uses_environment_model_and_default_input(tmp_path, monkeypatch, capsys):

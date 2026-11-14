@@ -1,0 +1,2 @@
+{"schema_version": "1.0", "data": {"id": "dev_0", "sentence": "Eating soup means eating only solids.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_5", "sentence": "Many business owners rely on WordPress to create their websites.", "expected": true, "dataset": "CREAK", "split": "dev"}}

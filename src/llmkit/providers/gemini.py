@@ -34,7 +34,7 @@ class GeminiProvider:
         self, request: LLMRequest, *, response_model: type[BaseModel] | None = None
     ) -> LLMResponse:
         system = "\n\n".join(m.content for m in request.messages if m.role == "system")
-        contents = [
+        contents: list[types.ContentUnionDict] = [
             types.Content(
                 role="model" if message.role == "assistant" else "user",
                 parts=[types.Part(text=message.content)],
