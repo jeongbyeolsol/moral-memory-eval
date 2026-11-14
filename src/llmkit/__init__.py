@@ -10,7 +10,7 @@ from llmkit.errors import (
     ResponseError,
     StructuredOutputError,
 )
-from llmkit.schemas import GenerationConfig, LLMRequest, LLMResponse, Message, TokenUsage
+from llmkit.schemas import GenerationConfig, LLMRequest, LLMResponse, LLMResult, Message, TokenUsage
 
 __all__ = [
     "ClientConfig",
@@ -21,6 +21,7 @@ __all__ = [
     "LLMKitError",
     "LLMRequest",
     "LLMResponse",
+    "LLMResult",
     "Message",
     "ProviderError",
     "ResponseError",

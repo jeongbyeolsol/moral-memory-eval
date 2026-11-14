@@ -12,26 +12,65 @@ source .venv/bin/activate
 python -m pip install -e '.[dev]'
 ```
 
-`.env.example`을 참고하여 루트의 `.env`에 사용할 제공자의 키를 입력합니다.
+`.env.example`을 참고하여 루트의 `.env`에 사용할 제공자의 키와 모델 ID를 입력합니다.
 
 ```dotenv
 OPENAI_API_KEY=your-openai-api-key
+OPENAI_MODEL=YOUR_OPENAI_MODEL_ID
 GEMINI_API_KEY=your-gemini-api-key
+GEMINI_MODEL=YOUR_GEMINI_MODEL_ID
 ```
 
-예제 스크립트만 `.env`를 명시적으로 읽습니다. 라이브러리는 환경변수 또는 `api_key=`로 전달한 키를 사용하며, 키를 결과나 설정 모델에 저장하지 않습니다. 이미 설정된 환경변수는 `.env`보다 우선하고, 명시적 `api_key=`는 환경변수보다 우선합니다.
+예제·실험 실행 스크립트만 `.env`를 명시적으로 읽습니다. 라이브러리는 환경변수 또는 `api_key=`로 전달한 키를 사용하며, 키를 결과나 설정 모델에 저장하지 않습니다. 이미 설정된 환경변수는 `.env`보다 우선하고, 명시적 `api_key=`는 환경변수보다 우선합니다.
 
-아래 `YOUR_OPENAI_MODEL_ID`, `YOUR_GEMINI_MODEL_ID`는 계정에서 사용할 수 있는 실제 모델 ID로 교체합니다. 모델 이름은 코드에 고정하지 않습니다.
+`YOUR_OPENAI_MODEL_ID`, `YOUR_GEMINI_MODEL_ID`는 계정에서 사용할 수 있는 실제 모델 ID로 교체합니다. 모델은 `--model` 옵션, 선택한 제공자의 `OPENAI_MODEL` 또는 `GEMINI_MODEL` 순서로 결정합니다. 둘 다 없거나 선택된 값이 비어 있으면 오류를 발생시킵니다.
 
 ```bash
-python examples/simple_chat.py --provider openai --model YOUR_OPENAI_MODEL_ID \
-  --prompt "LLM을 한 문장으로 설명해 줘." --output outputs/answer.json
+python examples/file_chat.py --provider openai
 
-python examples/simple_chat.py --provider gemini --model YOUR_GEMINI_MODEL_ID \
-  --prompt "재현 가능한 실험이란 무엇인가요?"
+python examples/file_chat.py --provider gemini --input inputs/request.json
 ```
 
 이 명령은 실제 API를 호출합니다. 테스트 명령은 API 키나 외부 연결 없이 실행할 수 있습니다.
+
+## 파일에서 질문 읽기
+
+기본 실행은 `inputs/requests.jsonl`을 읽고 `outputs/chat-<고유 ID>.jsonl`에 요청과 답변을 함께 저장합니다. 기본 경로는 프로젝트 루트를 기준으로 하며, `--input`, `--output`으로 지정한 상대 경로는 현재 작업 디렉토리를 기준으로 합니다. 지정한 파일 하나를 처리합니다.
+
+```bash
+# JSONL: 각 줄에 독립된 요청 한 개
+python examples/file_chat.py --provider openai --input inputs/requests.jsonl \
+  --output outputs/results.jsonl
+
+# JSON: 요청 한 개; 환경변수의 모델을 이번 실행에서만 변경
+python examples/file_chat.py --provider gemini --input inputs/request.json \
+  --model YOUR_OTHER_MODEL_ID
+```
+
+JSON 입력 형식은 다음과 같습니다. JSONL은 같은 객체를 한 줄에 하나씩 작성합니다. 여러 질문을 하나의 대화로 이어가려면 한 요청의 `messages`에 대화 이력을 넣습니다. JSONL의 각 요청 사이에는 대화 이력을 공유하지 않습니다.
+
+```json
+{
+  "schema_version": "1.0",
+  "data": {
+    "messages": [
+      {"role": "system", "content": "친절하고 정확하게 답변해 주세요."},
+      {"role": "user", "content": "LLM을 한 문장으로 설명해 줘."}
+    ],
+    "generation": {"max_output_tokens": 1024}
+  }
+}
+```
+
+`generation`은 생략할 수 있습니다. 입력 전체를 API 호출 전에 검증하며 잘못된 데이터나 빈 파일을 거부합니다. 결과의 `data`에는 `request`와 `response`가 들어갑니다. `load_jsonl(path, LLMResult)`로 다시 읽을 수 있습니다. 기존 출력 파일을 덮어쓰지 않으며, 호출 중 실패해도 완료된 결과는 남습니다. 자동 이어 실행은 지원하지 않습니다.
+
+파일 경로 선택과 반복 실행은 예제 실행 코드가 담당하고, `LLMClient`는 검증된 `LLMRequest`만 받습니다. 따라서 `inputs/`라는 디렉토리나 특정 실험의 파일 형식에 라이브러리가 의존하지 않습니다. 프로젝트별 외부 형식이 생기면 해당 프로젝트의 로더에서 `LLMRequest`로 변환하면 됩니다.
+
+직접 질문을 입력하는 기존 예제도 사용할 수 있습니다. `--prompt`를 생략하면 기본 질문을 사용합니다.
+
+```bash
+python examples/simple_chat.py --provider openai --prompt "LLM이란 무엇인가요?"
+```
 
 ## Python에서 사용하기
 
@@ -50,6 +89,8 @@ with LLMClient(config) as client:
 ```
 
 Gemini를 쓰려면 `provider="gemini"`와 모델 ID를 변경합니다. 컨텍스트 매니저는 SDK의 HTTP 연결을 닫습니다. 직접 관리할 때는 `client.close()`를 호출합니다. 다른 저장소에서는 이 프로젝트 경로를 `pip install -e /path/to/llm-lab`로 설치하여 사용합니다.
+
+환경변수에서 모델을 읽으려면 `ClientConfig.from_env("openai")`를 사용합니다. `ClientConfig.from_env("openai", model="YOUR_MODEL_ID")`로 명시한 모델이 우선합니다. 이 함수는 `.env` 파일을 읽지 않으므로 호출하는 프로그램이 필요에 따라 환경변수를 준비합니다. `ClientConfig(provider=..., model=...)`로 직접 생성하는 방식도 유지됩니다.
 
 대화 이력이 필요하면 `LLMRequest`에 메시지를 명시적으로 전달합니다. 클라이언트는 내부에 대화 이력을 저장하지 않습니다.
 
@@ -155,7 +196,7 @@ def migrate_v01(record: dict[str, Any]) -> dict[str, Any]:
 
 | 오류 | 의미 |
 | --- | --- |
-| `ConfigurationError` | API 키 누락 |
+| `ConfigurationError` | API 키 또는 모델 환경변수 누락·빈 값 |
 | `ProviderError` | API/전송 오류. `provider`, `status_code`, 원본 예외 `__cause__` 제공 |
 | `ResponseError` | 거절·차단·빈 응답·미완료 응답 |
 | `StructuredOutputError` | JSON/응답 스키마 검증 실패. `ResponseError`의 하위 타입 |
@@ -168,7 +209,7 @@ Python 모델 생성 시 잘못된 입력은 Pydantic `ValidationError`입니다
 샘플 실험은 두 프로필 조건과 두 사실 명제를 조합하여 네 번 호출하고, `is_true`와 `reasoning`을 구조화된 출력으로 받습니다. 샘플 데이터는 실행 흐름을 설명하기 위한 예시입니다.
 
 ```bash
-python -m experiments.epistemics.run --provider openai --model YOUR_OPENAI_MODEL_ID \
+python -m experiments.epistemics.run --provider openai \
   --output outputs/epistemics-run1.jsonl
 
 python -m experiments.epistemics.analyze outputs/epistemics-run1.jsonl \
@@ -194,6 +235,8 @@ src/llmkit/
     openai.py           OpenAI Responses API 어댑터
     gemini.py           Gemini Developer API 어댑터
 examples/simple_chat.py
+examples/file_chat.py   JSON/JSONL 파일 입력 실행
+inputs/                범용 요청 샘플 (경로 변경 가능)
 experiments/epistemics/  실험별 스키마·데이터·실행·분석
 tests/                  네트워크를 차단한 자동 테스트
 ```
@@ -209,6 +252,6 @@ ruff format --check .
 mypy
 ```
 
-모델 검증, JSON/JSONL 왕복, 구버전 변환, 데이터 오류, 제공자별 메시지·옵션 변환, 토큰 사용량, 구조화된 출력, HTTP 오류, 차단·거절·잘린 답변, 실험 실행부터 분석까지 테스트합니다. 실제 SDK와 모의 HTTP 전송 계층을 사용하며 테스트 중 네트워크 연결을 차단합니다.
+모델 검증, JSON/JSONL 왕복, 구버전 변환, 데이터 오류, 파일 입력 실행, 모델 환경변수와 명시적 옵션 우선순위, 제공자별 메시지·옵션 변환, 토큰 사용량, 구조화된 출력, HTTP 오류, 차단·거절·잘린 답변, 실험 실행부터 분석까지 테스트합니다. 실제 SDK와 모의 HTTP 전송 계층을 사용하며 테스트 중 네트워크 연결을 차단합니다.
 
 구현 참고: [OpenAI Responses API](https://developers.openai.com/api/reference/python/resources/responses/methods/create), [Google Gen AI Python SDK](https://googleapis.github.io/python-genai/).

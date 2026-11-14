@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "messages": [
+      {"role": "system", "content": "친절하고 정확하게 답변해 주세요."},
+      {"role": "user", "content": "LLM을 한 문장으로 설명해 줘."}
+    ],
+    "generation": {"max_output_tokens": 1024}
+  }
+}

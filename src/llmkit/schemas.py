@@ -67,3 +67,10 @@ class LLMResponse(SchemaModel):
             return response_model.model_validate_json(self.text, strict=True)
         except ValidationError as exc:
             raise StructuredOutputError("Response does not match the requested schema") from exc
+
+
+class LLMResult(SchemaModel):
+    """A request paired with its response, suitable for project-independent storage."""
+
+    request: LLMRequest
+    response: LLMResponse

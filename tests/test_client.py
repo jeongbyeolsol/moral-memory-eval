@@ -60,3 +60,28 @@ def test_credential_resolution(monkeypatch, provider, variable):
     assert resolve_api_key(provider, "explicit-key") == "explicit-key"
     with pytest.raises(ConfigurationError):
         resolve_api_key(provider, " ")
+
+
+@pytest.mark.parametrize(
+    "provider,variable,other",
+    [
+        ("openai", "OPENAI_MODEL", "GEMINI_MODEL"),
+        ("gemini", "GEMINI_MODEL", "OPENAI_MODEL"),
+    ],
+)
+def test_model_environment_and_explicit_precedence(monkeypatch, provider, variable, other):
+    monkeypatch.delenv(variable, raising=False)
+    monkeypatch.setenv(other, "other-provider-model")
+    with pytest.raises(ConfigurationError, match=variable):
+        ClientConfig.from_env(provider)
+    assert ClientConfig.from_env(provider, model="explicit-model").model == "explicit-model"
+    monkeypatch.setenv(variable, "env-model")
+    assert ClientConfig.from_env(provider).model == "env-model"
+    assert ClientConfig.from_env(provider, model="override").model == "override"
+    # Direct construction remains independent of environment-based configuration.
+    assert ClientConfig(provider=provider, model="direct-model").model == "direct-model"
+    with pytest.raises(ConfigurationError):
+        ClientConfig.from_env(provider, model=" ")
+    monkeypatch.setenv(variable, " ")
+    with pytest.raises(ConfigurationError, match=variable):
+        ClientConfig.from_env(provider)

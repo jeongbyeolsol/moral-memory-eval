@@ -5,6 +5,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from dotenv import load_dotenv
+from pydantic import ValidationError
 
 from experiments.epistemics.schemas import Claim, ExperimentResult, Profiles, Verdict
 from llmkit import ClientConfig, DataError, LLMClient, LLMKitError, LLMRequest, Message
@@ -55,7 +56,7 @@ def run_experiment(client: LLMClient, profiles: Profiles, claims: list[Claim], o
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the example epistemics experiment")
     parser.add_argument("--provider", choices=["openai", "gemini"], required=True)
-    parser.add_argument("--model", required=True)
+    parser.add_argument("--model", help="Overrides OPENAI_MODEL or GEMINI_MODEL")
     parser.add_argument("--profiles", type=Path, default=DATA_DIR / "profiles.json")
     parser.add_argument("--claims", type=Path, default=DATA_DIR / "claims.jsonl")
     parser.add_argument("--output", type=Path, required=True, help="New JSONL file for this run")
@@ -65,9 +66,9 @@ def main() -> None:
     try:
         profiles = load_json(args.profiles, Profiles)
         claims = load_jsonl(args.claims, Claim)
-        with LLMClient(ClientConfig(provider=provider, model=args.model)) as client:
+        with LLMClient(ClientConfig.from_env(provider, model=args.model)) as client:
             count = run_experiment(client, profiles, claims, args.output)
-    except (LLMKitError, OSError) as exc:
+    except (LLMKitError, OSError, ValidationError) as exc:
         parser.exit(1, f"Error: {exc}\n")
     print(f"Saved {count} results to {args.output}")
 
