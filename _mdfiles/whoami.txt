@@ -1,0 +1,6 @@
+이 디렉토리는 git clone한 이전 뼈대 프로젝트의 .md파일을 보존한다.
+
+
+기존 README.md와 달리 
+python -m pip install -e '.[dev,analysis]'
+를 통해 필요한 패키지를 설치한다.
