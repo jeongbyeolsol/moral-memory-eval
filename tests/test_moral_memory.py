@@ -408,3 +408,10 @@ def test_invalid_raw_creak_is_rejected(tmp_path, payload):
     source.write_text(json.dumps(payload))
     with pytest.raises(DataError, match="dev.json:1"):
         load_creak(source, "dev")
+
+
+def test_legacy_completion_rejects_same_count_with_unplanned_trial(tmp_path):
+    rows = make_results(tmp_path)
+    rows[-1] = rows[-1].model_copy(update={"trial_id": "unplanned"})
+    with pytest.raises(DataError, match="Unplanned trial"):
+        analyze(rows)

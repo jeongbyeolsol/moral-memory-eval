@@ -7,27 +7,11 @@ from pathlib import Path
 from experiments.moral_memory.schemas import Analysis, Claim, ExperimentResult, Metrics, Profile
 from llmkit import DataError, LLMKitError
 from llmkit.io import load_jsonl, save_json
+from moral_memory_eval.metrics import calculate_metrics
 
 
 def _metrics(rows: list[ExperimentResult]) -> Metrics:
-    count = len(rows)
-    correct = [row.verdict.is_true == row.claim.expected for row in rows]
-    false_rows = [row for row in rows if not row.claim.expected]
-    return Metrics(
-        count=count,
-        false_claim_count=len(false_rows),
-        accuracy=sum(correct) / count,
-        agreement_rate=sum(row.verdict.is_true for row in rows) / count,
-        false_claim_agreement_rate=(
-            sum(row.verdict.is_true for row in false_rows) / len(false_rows) if false_rows else None
-        ),
-        mean_confidence=sum(row.verdict.confidence for row in rows) / count,
-        brier_score=sum(
-            (row.verdict.confidence - float(is_correct)) ** 2
-            for row, is_correct in zip(rows, correct)
-        )
-        / count,
-    )
+    return calculate_metrics([(row.claim.expected, row.verdict) for row in rows])
 
 
 def analyze(results: list[ExperimentResult]) -> Analysis:
@@ -60,14 +44,15 @@ def analyze(results: list[ExperimentResult]) -> Analysis:
         profiles[row.profile.id] = row.profile
         claims[row.claim.id] = row.claim
         groups[row.profile.id].append(row)
-    if len(results) > first.planned_trials:
-        raise DataError("Observed trials exceed the planned trial count")
+    expected_ids = {f"{first.run_id}:{index:08d}" for index in range(first.planned_trials)}
+    if not trial_ids <= expected_ids:
+        raise DataError("Unplanned trial IDs in legacy results")
     return Analysis(
         run_id=first.run_id,
         prompt_version=first.prompt_version,
         planned_trials=first.planned_trials,
         observed_trials=len(results),
-        complete=len(results) == first.planned_trials,
+        complete=trial_ids == expected_ids,
         overall=_metrics(results),
         by_profile={key: _metrics(rows) for key, rows in sorted(groups.items())},
     )

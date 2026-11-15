@@ -6,6 +6,7 @@ from llmkit import ClientConfig, GenerationConfig, LLMRequest, LLMResponse
 from llmkit.errors import StructuredOutputError
 from llmkit.schemas import SchemaModel
 from moral_memory_eval.schemas import Claim as Claim
+from moral_memory_eval.schemas import Metrics as Metrics
 from moral_memory_eval.schemas import Profile as Profile
 from moral_memory_eval.schemas import Profiles as Profiles
 from moral_memory_eval.schemas import Text as Text
@@ -48,16 +49,6 @@ class ExperimentResult(SchemaModel):
         if verdict != self.verdict:
             raise ValueError("verdict must match the stored response")
         return self
-
-
-class Metrics(SchemaModel):
-    count: int = Field(gt=0)
-    false_claim_count: int = Field(ge=0)
-    accuracy: float = Field(ge=0, le=1)
-    agreement_rate: float = Field(ge=0, le=1)
-    false_claim_agreement_rate: float | None = Field(ge=0, le=1)
-    mean_confidence: float = Field(ge=0, le=1)
-    brier_score: float = Field(ge=0, le=1)
 
 
 class Analysis(SchemaModel):

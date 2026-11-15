@@ -30,3 +30,4 @@ outputs/
 /inputs/generated/
 
 /_old_*
+*cache/

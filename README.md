@@ -85,7 +85,7 @@ python -m moral_memory_eval.cli prepare \
 
 추가 파일 `preparation.json`은 선택한 프로필·문항·설정의 스냅샷과 입력·출력 파일 해시를 보존합니다. 이 파일을 사용해 원본 CREAK나 프로필 설정 파일이 없어도 케이스 전체와 대응 관계를 재검증할 수 있습니다. 세 파일을 임시 디렉터리에서 함께 검증한 뒤 디렉터리 단위로 게시합니다. 최종 경로가 이미 있으면 비어 있어도 중단합니다. 같은 출력 경로를 병행 작성하지 마세요.
 
-기존 `examples/file_chat.py`는 생성된 `requests.jsonl`을 읽을 수 있습니다. 다만 이 예제는 manifest와 결과를 자동 연결하거나 `Verdict` 응답 스키마를 API에 전달하지 않습니다. 이번 단계는 요청 생성·대응 정보 보존까지이며 완전한 결과 매칭은 별도 작업입니다. 앞선 `experiments.moral_memory.run`은 구조화된 응답을 지원하는 직접 실행 경로로 유지됩니다. 요청 파일에는 응답을 JSON으로 요구하는 지침이 포함되어 있습니다.
+기존 `examples/file_chat.py`는 생성된 `requests.jsonl`을 읽을 수 있지만 manifest 대응이나 구조화된 응답 검증을 제공하지 않는 일반 예제입니다. 준비된 실험에는 아래의 `moral_memory_eval.cli run`을 사용하세요. 앞선 `experiments.moral_memory.run`은 입력으로부터 프롬프트를 만드는 기존 직접 실행 경로로 유지됩니다.
 
 ### 3. 무결성과 중복 검증
 
@@ -113,6 +113,66 @@ git check-ignore -v dataset/creak inputs/generated/main-v1
 ```
 
 선정 데이터의 Git 추가·커밋·push는 사용자가 결정합니다. 로컬 파일은 원격 push 전까지 원격 백업된 것이 아닙니다. 공개 저장소에 재배포하기 전에는 CREAK의 재배포 조건을 확인하세요. 키와 `.env`는 추적하지 않습니다.
+
+## 준비된 요청 실행·Resume·분석
+
+권장 실행 경로는 `sample → prepare → run → analyze`입니다. `run`은 준비된 디렉터리의 세 파일을 전체 검증하고, `requests.jsonl`의 요청을 그대로 `client.generate(request, response_model=Verdict)`에 전달합니다. 실행 단계에서는 원본 CREAK 읽기, 샘플링, 프롬프트 재생성을 하지 않습니다. 생성 설정도 준비된 요청 그대로 사용하므로 실행 CLI에는 temperature나 토큰 제한을 덮어쓰는 옵션이 없습니다.
+
+```bash
+# API 키·모델 없이 입력과 예정 호출 수만 확인 (파일 생성 없음)
+python -m moral_memory_eval.cli run \
+  --input-dir inputs/generated/pilot-v1 --provider openai \
+  --output outputs/pilot-run1.jsonl --dry-run
+
+# 실제 API 호출: .env의 OPENAI_MODEL 사용, 우선 성공 trial 2개까지만 실행
+python -m moral_memory_eval.cli run \
+  --input-dir inputs/generated/pilot-v1 --provider openai \
+  --output outputs/pilot-run1.jsonl --max-calls 2 --max-retries 0
+
+# 같은 파일·모델 설정으로 나머지 trial 실행
+python -m moral_memory_eval.cli run \
+  --input-dir inputs/generated/pilot-v1 --provider openai \
+  --output outputs/pilot-run1.jsonl --resume --max-retries 0
+
+# API 없이 전체·프로필별 분석
+python -m moral_memory_eval.cli analyze \
+  --results outputs/pilot-run1.jsonl --output outputs/pilot-run1-summary.json
+```
+
+두 번째·세 번째 명령은 실제 API를 호출합니다. `--max-calls`를 생략하면 남은 trial 전체를 실행합니다. 이 옵션은 이번 실행에서 새로 저장할 성공 trial 수의 제한이며 HTTP 요청 횟수 제한은 아닙니다. SDK 재시도를 끄려면 `--max-retries 0`을 지정합니다. Gemini도 `--provider gemini`와 해당 키·모델 설정으로 같은 경로를 사용합니다. `--model`은 환경변수보다 우선하며 `--timeout` 기본값은 60초, `--max-retries` 기본값은 2입니다.
+
+실행 시 `verify_prepared(..., verify_prompts=False)`로 파일 해시·스키마·설정 스냅샷·trial 순서·전체 조합을 검증합니다. 기본 `verify-prepared` 명령은 종전처럼 현재 템플릿으로도 재검증하지만, 실제 실행 경로는 템플릿을 호출하지 않고 저장된 요청의 정규화 SHA-256을 manifest와 대조합니다. `request_index`로 요청을 선택하므로 기존 직접 실행기의 순서나 seed와 같다고 가정하지 않습니다.
+
+### 실행 결과와 저장 파일
+
+```text
+outputs/pilot-run1.jsonl       성공한 결과를 건별 즉시 저장
+outputs/pilot-run1.run.json    실행 UUID, 전체 예정 manifest, 준비 설정 스냅샷, 모델 설정
+outputs/pilot-run1.jsonl.lock  동일 결과 파일의 동시 작성 방지용 잠금 파일
+```
+
+각 결과는 `schema_version: "1.0"` 봉투 안의 `PreparedResult`로 저장합니다. 기존 manifest의 `trial_id`, `request_index`, `claim_id`, `profile_id`, `expected`, `repeat_index`, `prompt_version`, `request_sha256`을 그대로 보존하며 `run_id`, `preparation_sha256`, 실제 `request`, `response`, 검증된 `verdict`, `client_config`를 추가합니다. 생성 옵션은 `request.generation`에 있고 실제 응답 모델 버전은 `response.model`에 있습니다. 정답·프로필 ID·도덕성 점수는 API 메시지에 추가하지 않습니다.
+
+API·스키마·저장 오류는 실패 trial ID, 요청 인덱스, 원래 오류 종류가 포함된 `ExecutionError`로 보고하고 원래 예외를 `__cause__`로 보존합니다. 잘못된 응답은 성공 결과로 저장하지 않습니다. 결과 파일과 `.run.json`은 함께 보존해야 하며 기존 파일은 기본적으로 덮어쓰지 않습니다. 잠금은 POSIX 파일 잠금으로 구현했고 잠금 파일은 비어 있어도 남아 있을 수 있습니다.
+
+### Resume의 검증 범위
+
+`--resume`은 기존 결과 전체를 읽고 다음을 검증한 뒤 완료된 trial만 건너뜁니다.
+
+- 준비 설정·요청 파일 해시·manifest 및 안정적인 trial ID가 같은지
+- 제공자·요청 모델 ID·timeout·재시도 설정이 기존 실행과 같은지
+- 각 결과의 manifest 필드, 요청 해시·생성 설정, 응답과 Verdict가 일치하는지
+- 중복·예정에 없는 trial이나 잘린 JSONL 레코드가 없는지
+
+준비 디렉터리를 다른 경로로 옮겨도 내용과 설정이 같으면 재사용할 수 있습니다. 이미 완료된 실행을 Resume하면 API를 다시 호출하지 않습니다. 손상되거나 일부만 기록된 JSONL은 자동 삭제·복구하지 않고 오류로 중단합니다. 서버가 응답했지만 로컬 결과가 저장되기 전에 프로세스가 종료된 경우까지 원격 호출의 exactly-once를 보장하지는 않습니다.
+
+### 분석과 완료 판정
+
+새 분석 경로는 `.run.json`의 예정된 `trial_id` 집합과 실제 완료된 집합을 비교합니다. 같은 개수라도 중복·다른 trial이 있으면 오류이며, 결과 개수만으로 완료라고 판정하지 않습니다. `completed_trial_ids`, `pending_trial_ids`, `complete`를 보고하고 Accuracy, Agreement Rate, False-claim Agreement Rate, Mean Confidence, Brier Score를 전체와 프로필별로 계산합니다. 기존 분석과 같은 계산 함수를 공유하며 Brier Score는 `(confidence - float(is_true == expected)) ** 2`입니다.
+
+부분 실행도 분석할 수 있고, 아직 성공 결과가 없으면 `overall`은 null, 프로필 집계는 빈 객체입니다. 거짓 문항이 없는 그룹의 False-claim Agreement Rate는 null입니다. 서로 다른 모델 설정·준비 데이터의 결과를 혼합하지 않습니다. 동일 모델 별칭의 실제 반환 버전이 실행 도중 달라지는 경우 각 응답에 버전을 보존하지만 별도 집계는 하지 않으므로 연구에서는 가능한 경우 모델 snapshot ID를 지정하세요.
+
+범용 `llmkit`, API 제공자 구현, 기존 데이터 파일은 이 통합 과정에서 변경하지 않았습니다. 이전 `ExperimentResult` 파일은 아래의 기존 분석 명령을 사용하고, 새 `PreparedResult` 파일은 이 절의 `moral_memory_eval.cli analyze`를 사용합니다. 두 결과 형식은 구별하며 자동 변환하지 않습니다.
 
 ## 입력 준비
 
@@ -160,7 +220,7 @@ python -m experiments.moral_memory.prepare dataset/creak/dev.jsonl --split dev \
 
 `--ids`와 `--per-label`은 함께 지정할 수 없습니다. 저장된 명제 ID·split·문장·정답으로 선정 결과를 확인할 수 있습니다. 변환 명령은 API를 호출하지 않습니다. 원본 출처: [CREAK](https://github.com/yasumasaonoe/creak). 로컬 경로의 데이터는 저장소에 포함하지 않습니다.
 
-## 실행
+## 기존 직접 실행 (호환 경로)
 
 먼저 입력 검증과 호출 수만 확인할 수 있습니다. `--dry-run`은 모델·키 없이 실행 가능하며 결과 파일을 생성하지 않습니다.
 
@@ -233,7 +293,7 @@ Am I correct?
 
 완료된 결과는 건별로 즉시 추가 저장합니다. 기존 파일은 거부하고, 오류 시 중단하며 저장된 앞선 결과는 남깁니다. `TrialError`에는 실패 조건과 원래 오류 종류가 표시되고 원본 예외는 `__cause__`로 유지됩니다. 잘못된 답변을 수정하거나 기본값으로 대체하지 않습니다. 자동 이어 실행은 제공하지 않습니다.
 
-## 분석
+## 기존 결과 분석 (호환 경로)
 
 ```bash
 python -m experiments.moral_memory.analyze outputs/run-001.jsonl \
@@ -283,5 +343,7 @@ mypy
 ```
 
 자동 테스트는 외부 네트워크 연결을 차단합니다. 프로필·명제 검증, 메타데이터 유출 방지, 통제 조건, 확신도 범위, 저장 왕복, 반복 호출 수, 순서 재현, 실패 후 부분 결과, 지표 계산, CREAK 변환을 모의 제공자로 검증합니다. 실제 API 확인은 자동 테스트와 분리해 소수 trial로 수행합니다.
+
+이번 통합은 Mock 기반으로 검증했으며 실제 API 확인 호출은 수행하지 않았습니다. 제공자별 실제 구조화된 응답, 모델 접근 권한, 256토큰 제한의 적절성은 소수 요청으로 별도 확인해야 합니다.
 
 이 구현은 system 메시지로 메모리를 모사하며 실제 ChatGPT Memory를 조작하지 않습니다. 초경량 모델의 소수 호출은 실행 흐름 확인용이며 연구 효과를 입증하지 않습니다. 본실험 프로필·문항 확정, 통계 분석, 병렬 실행, 로컬 LLM·내부 표현 분석은 별도 작업입니다.

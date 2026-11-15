@@ -21,6 +21,7 @@ from moral_memory_eval.schemas import (
     PreparationMetadata,
     PreparationSettings,
     Profiles,
+    validate_manifest,
 )
 
 
@@ -66,7 +67,7 @@ def build_cases(settings: PreparationSettings) -> tuple[list[LLMRequest], list[M
     return requests, entries
 
 
-def verify_prepared(directory: Path) -> PreparationMetadata:
+def verify_prepared(directory: Path, *, verify_prompts: bool = True) -> PreparationMetadata:
     """Verify self-contained snapshots, complete combinations, order, and both file hashes."""
     metadata = load_json(directory / "preparation.json", PreparationMetadata)
     if metadata.preparation_sha256 != canonical_hash(metadata.settings):
@@ -79,10 +80,38 @@ def verify_prepared(directory: Path) -> PreparationMetadata:
     entries = load_jsonl(directory / "manifest.jsonl", ManifestEntry)
     if len(requests) != len(entries) or len(entries) != metadata.case_count:
         raise DataError(f"{directory}: request/manifest count mismatch")
-    expected_requests, expected_entries = build_cases(metadata.settings)
-    if requests != expected_requests or entries != expected_entries:
-        raise DataError(f"{directory}: request/manifest content or order does not match settings")
+    validate_prepared_records(metadata, requests, entries, verify_prompts=verify_prompts)
     return metadata
+
+
+def validate_prepared_records(
+    metadata: PreparationMetadata,
+    requests: list[LLMRequest],
+    entries: list[ManifestEntry],
+    *,
+    verify_prompts: bool = False,
+) -> None:
+    """Validate saved correspondence without rebuilding prompts during execution."""
+    if len(requests) != len(entries) or len(entries) != metadata.case_count:
+        raise DataError("Prepared request/manifest count mismatch")
+    try:
+        validate_manifest(metadata, entries)
+    except ValueError as exc:
+        raise DataError(
+            f"Prepared request/manifest content or order does not match settings: {exc}"
+        ) from exc
+    for index, entry in enumerate(entries):
+        request = requests[entry.request_index]
+        if (
+            entry.request_index != index
+            or canonical_hash(request) != entry.request_sha256
+            or request.generation != metadata.settings.generation
+        ):
+            raise DataError("Prepared request hash, index, or generation does not match manifest")
+    if verify_prompts:
+        expected_requests, expected_entries = build_cases(metadata.settings)
+        if requests != expected_requests or entries != expected_entries:
+            raise DataError("Prepared request/manifest content or order does not match settings")
 
 
 def prepare_requests(
