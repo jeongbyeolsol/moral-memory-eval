@@ -1,0 +1,120 @@
+{"schema_version": "1.0", "data": {"id": "dev_1147", "sentence": "Microsoft helped Nintendo build the Nintendo DS Lite.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_790", "sentence": "Harper's Bazaar is a Marketplace you can actually go to.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_84", "sentence": "Gregory of Nazianzus helped give birth to 329 children.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_935", "sentence": "U.S. Route 66 has never been repaired since it was built.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_15", "sentence": "Ernst Haeckel publish books that focused on evolutionary biology.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_372", "sentence": "Laurence Fishburne ceases to act in movies.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_649", "sentence": "Many citizens despised of the time Louis XVI of France.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_650", "sentence": "The butterfly emerged from its cocoon.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_569", "sentence": "A nail falls off when you reach 60.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_289", "sentence": "There is an upsurge of people who believe in the claims of parapsychology.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_268", "sentence": "The Offspring has many hit singles.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1295", "sentence": "Hate speech creates a lot of fights in the USA.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1101", "sentence": "Dwyane Wade played for the Phoenix Suns.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_967", "sentence": "George Armstrong Custer survived the Battle of Little Bighorn.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1306", "sentence": "C. S. Lewis authored The Lord of the Rings trilogy.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_494", "sentence": "If people want to see celebrities, The US Open is a great place to go.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_113", "sentence": "Many people watched the TV show Prison Break.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_81", "sentence": "Paul Allen performed as the musical act during the Super Bowl.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_695", "sentence": "WWE Raw creates a real sporting event atmosphere that is legit.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_897", "sentence": "People either know Tim McGraw by having listened to his music, watching him on TV, or familiarity with his wife, Faith Hill.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_180", "sentence": "The 1984 United States presidential election was the year Ronald Reagan got elected.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_886", "sentence": "Monopoly entertained Revolutionary War soldiers.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_803", "sentence": "Muse won the Ivor Novello Award.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_320", "sentence": "An Official is a boss and makes rules over some area of expertise.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_386", "sentence": "A butterfly can reproduce by live birth and then care for their babies.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_322", "sentence": "John Dewey invented the Dewey Decimal System.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1162", "sentence": "Whole Foods Market currently operates as part of a larger business.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_784", "sentence": "Michelangelo cooked pizzas for a living.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1025", "sentence": "Boyle's law prevents people from making false claims in court.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_484", "sentence": "Cellulose decomposes the intestines of humans when consumed.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_818", "sentence": "That's So Raven's spinoff show includes all of the main characters.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_228", "sentence": "The history of mathematics spans many centuries.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_527", "sentence": "Disney adapted The Jungle Book into an animated film.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_687", "sentence": "One can read various poems and plays written by Ben Jonson.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_140", "sentence": "Giving someone a rose is a nice gesture, though not everyone enjoys their smell.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_581", "sentence": "The house had a great yard that can be viewed from the porch.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_86", "sentence": "Spaghetti refers to a specific type of pasta, and not its sauce.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_279", "sentence": "Humans cannot eat fennel because it's poisonous.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1362", "sentence": "Boa constrictors serve as a source of food for most people.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1078", "sentence": "People celebrate Green Day by wearing all green.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_853", "sentence": "Arthritis causes extreme pain in joints and bones for those who suffer from it.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_255", "sentence": "Panasonic changed its name from Matsushita Electric.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1039", "sentence": "Bruce Lee cooks his famous Kung Fu soup for fellow singers.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_731", "sentence": "People do not prefer televisions made of ultra-high-definition television citing health issues such as emission of cancerous rays.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1129", "sentence": "The instructional manual for the Army's new canon is called canon law.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_33", "sentence": "Alfred Nobel took a career in acting.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1348", "sentence": "Petro Poroshenko ruled as President of Ukraine.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_217", "sentence": "The Eastern Front experienced a lot of battles and blood.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_6", "sentence": "Dwarfism can occur in many animals.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1090", "sentence": "Dan Brown rocketed to the top of the bestseller list with The Da Vinci Code.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1212", "sentence": "Johann Gottfried Herder created poetry during the days of the enlightenment.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1311", "sentence": "Housefly grows as large as a pear fruit.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1234", "sentence": "One of the most well known nurses is Florence Nightingale.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1038", "sentence": "Bret Hart established himself as a professional wrestler.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_884", "sentence": "Hip hop took most of its inspiration from techno music.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1055", "sentence": "Muse released an entirely acoustic album.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_92", "sentence": "One can listen to music on ITunes.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_752", "sentence": "The man put his cigarette out before entering the restaurant with the smoking ban.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_392", "sentence": "Soup no longer exists as part of cuisine.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1320", "sentence": "The President of the Republic of China bakes cakes for a living.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_199", "sentence": "Richard Linklater won the Golden Globe Awards.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_763", "sentence": "Plano, Texas locates itself only in Collin County.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_356", "sentence": "People go to Dave Grohl for cooking advice.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_910", "sentence": "The Surrender of Japan happened at the Olympic Games.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_42", "sentence": "Founder of Disney Walt Whitman is known for advantage in the animation world.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_690", "sentence": "People need to study painting in college.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1213", "sentence": "A butler works in a house for a family.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1136", "sentence": "The cricetidae create the first appearance for the hamster among other rodents.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_212", "sentence": "Robert De Niro acted in his first film in 2015.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1059", "sentence": "Woodrow Wilson helped create the League of Nations.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_159", "sentence": "Boyle's law states that solids increases pressure when volume increases.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_683", "sentence": "The movie RoboCop starred a cyborg cop.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1209", "sentence": "The Southern United States make the most wine in the United States.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_957", "sentence": "Laws against hate speech force people to love speech.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_954", "sentence": "William Howard Taft served as an American politician.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_177", "sentence": "Satanism and Christianity go hand in hand.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_936", "sentence": "Thurgood Marshall grew up in Baltimore, Maryland.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_18", "sentence": "Robert Downey Jr. played the role of Captain America in the MCU Infinity Saga.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1142", "sentence": "Gregory Peck possessed the talent to play Atticus Finch in To Kill a Mockingbird.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1335", "sentence": "Dwyane Wade scored 100 goals in the MLS.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_758", "sentence": "Paula Deen shows off her skills on Food Network.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1184", "sentence": "Bugs Bunny sold by United States to France, broke many records for highest sale of any franchise.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_537", "sentence": "Snowboarding is a fun option for people who live in Rio de Janeiro.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1349", "sentence": "The Three Stooges released a series of comedy movies.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1296", "sentence": "Pearl Harbor had such an impact on American history that kids today are still learning about the event.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_325", "sentence": "A Chevrolet Camaro gets driven by a person.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1300", "sentence": "Pig latin replaces scholarly Latin as a language of choice for universities.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_0", "sentence": "Eating soup means eating only solids.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_123", "sentence": "dosa often are served at McDonalds and other fast food restaurants.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_863", "sentence": "Cantonese American martial artist Bruce Lee starred in many films in US and China.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_856", "sentence": "The Sahrawi Arab Democratic Republic has achieved recognition by the United Nations.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1111", "sentence": "A hamster can grow to over twenty pounds in weight.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_367", "sentence": "Many leaders gathered at the Eastern Front to seek peace.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_965", "sentence": "Someone ordered chocolate cake for dessert.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1308", "sentence": "several celebrities appear on The Tonight Show Starring Jimmy Fallon.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_698", "sentence": "A nun belongs to a religious group.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_545", "sentence": "Drinking Champagne is a good holistic method of recovering from illness.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_597", "sentence": "Gray fox are the only four-legged carnivores in South America.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_530", "sentence": "Ben Jonson father was imprisoned during the reign of Queen Mary I.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1007", "sentence": "Posttraumatic stress disorder make life easier for people.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_49", "sentence": "Amoeba has no solid shape, they are shapeless.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_622", "sentence": "Dubai runs along the coast of the Persian Gulf.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_817", "sentence": "Hector Berlioz made music for a living.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_24", "sentence": "Sam Cooke became a member of the rock n roll hall of fame.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_692", "sentence": "Microsoft created ITunes to use for streaming music.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_26", "sentence": "The Battle of the Little Bighorn took place during World War II.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1008", "sentence": "The Fairly OddParents follows a boy named Timmy as he navigates life with his fairy godparents.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1137", "sentence": "Lenin was the first Premier of the Soviet Union.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1068", "sentence": "Pearl Harbor bombing took the lives of many armed services members in Hawaii.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_169", "sentence": "You can see that there is no mention of the apostles in the Christian Bible.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1005", "sentence": "The University of Wisconsin–Madison never grants honorary degrees.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_536", "sentence": "Lifeguard mainly prevents drowning accidents in pools.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_861", "sentence": "A butterfly uses its antennae to sense smells.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_681", "sentence": "History books like Records of the Three Kingdoms can give one knowledge of past events.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_693", "sentence": "The family of Barack Obama involves African-American President of the US, Barack Obama, and the family he has created with his wife, Michelle.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_477", "sentence": "Celsius takes its name from the country of Celsia where the method was developed.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_423", "sentence": "Spaghetti contains Italian origins as a pasta dish.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_58", "sentence": "Bigfoot participates in the ecosystem of forest.", "expected": false, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_1088", "sentence": "Robert De Niro acted in many different films.", "expected": true, "dataset": "CREAK", "split": "dev"}}
+{"schema_version": "1.0", "data": {"id": "dev_808", "sentence": "Aerial photography lets us take photos from the ground to capture unique photos of the sky.", "expected": false, "dataset": "CREAK", "split": "dev"}}

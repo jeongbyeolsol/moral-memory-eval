@@ -231,7 +231,7 @@ python -m moral_memory_eval.cli prepare \
   --claims dataset/selected_data/main_claims.jsonl \
   --profiles configs/profiles.json \
   --profile-ids candidate_0 candidate_5 no_profile \
-  --repeats 2 --seed 42 --max-output-tokens 256 \
+  --repeats 2 --seed 42 --max-output-tokens 1024 \
   --output-dir inputs/generated/another-experiment-v1
 ```
 
@@ -242,15 +242,44 @@ python -m moral_memory_eval.cli prepare \
 | `--profile-ids` | 필수, 하나 이상 | 선택할 프로필 ID와 선택 순서 |
 | `--repeats` | 기본 1, 양의 정수 | 각 문항·프로필 조합의 반복 수 |
 | `--seed` | 기본 없음 | 전체 케이스 실행 순서 섞기 |
-| `--max-output-tokens` | 기본 256 | 공통 생성 토큰 제한 |
+| `--max-output-tokens` | 기본 1024 | 공통 생성 토큰 제한 |
 | `--temperature` | 기본 None | 지정할 때만 API에 전달 |
+| `--reasoning-effort` | 기본 None | none/low/medium/high/xhigh/max; OpenAI 전용 |
 | `--output-dir` | 필수 | 존재하지 않는 새 디렉터리 |
 
-`prepare_requests(claims_path, profiles_path, profile_ids, output_dir, *, repeats=1, seed=None, generation=None)`는 PreparationMetadata를 반환합니다. generation을 생략하면 `GenerationConfig(max_output_tokens=256)`을 사용합니다.
+`prepare_requests(claims_path, profiles_path, profile_ids, output_dir, *, repeats=1, seed=None, generation=None)`는 PreparationMetadata를 반환합니다. Python 함수의 generation을 생략하면 `GenerationConfig(max_output_tokens=256)`을 사용합니다. 현재 CLI는 별도로 기본 1024를 전달하므로 함수 기본값과 구별합니다.
 
 조합의 기본 순서는 **문항 → 선택 프로필 → 반복 인덱스**입니다. seed를 지정하면 조합 전체를 섞습니다. 같은 순서 설정을 재현하더라도 모델 응답의 결정성까지 보장하는 것은 아닙니다. 반복·요청 인덱스는 0부터 시작합니다.
 
 원본 CREAK를 읽지 않으며 선정 데이터와 설정 파일만 사용합니다. `preparation.json`에 스냅샷을 담으므로 준비 후 원본·설정 파일이 없어도 실행에 필요한 데이터를 유지합니다. 기존 선정 파일을 편집해 재사용하기보다 새 선정·새 준비 디렉터리를 만드세요.
+
+### GPT-6 Luna / medium 준비와 실행
+
+아래는 현재 `for_debug`에 보존된 선정 파일로 설정을 확인하는 예시입니다. 본실험에는 `--claims`를 검토·확정한 명제 파일로 바꾸고 새 출력 디렉터리를 사용합니다.
+
+```bash
+# API 없이 생성 설정을 보존: 기존 디렉터리 대신 새 이름 사용
+python -m moral_memory_eval.cli prepare \
+  --claims dataset/selected_data/for_debug/main_claims.jsonl \
+  --profiles configs/profiles.json \
+  --profile-ids candidate_0 candidate_5 no_profile \
+  --repeats 2 --seed 42 --max-output-tokens 1024 \
+  --reasoning-effort medium \
+  --output-dir inputs/generated/gpt6-luna-medium-check-v1
+
+# 실제 API 호출: 준비된 medium을 그대로 전달
+python -m moral_memory_eval.cli run \
+  --input-dir inputs/generated/gpt6-luna-medium-check-v1 \
+  --provider openai --model gpt-6-luna \
+  --output outputs/gpt6-luna-medium-check-v1.jsonl \
+  --max-calls 2 --max-retries 0
+```
+
+`prepare`에는 모델 인수가 없습니다. reasoning effort를 준비 설정으로 고정한 뒤 모델은 `run`에서 선택합니다. [GPT-6 Luna 공식 모델 문서](https://developers.openai.com/api/docs/models/gpt-6-luna)에 명시된 effort 중 `medium`을 사용합니다. 토큰 한도는 reasoning 토큰과 실제 답변 생성에 영향을 주므로 실험 목적에 맞게 별도 확인합니다.
+
+명시한 effort는 각 `requests.jsonl` 레코드의 `data.generation.reasoning_effort`와 `preparation.json`의 `data.settings.generation.reasoning_effort`에 저장됩니다. 실행 결과의 request와 .run.json의 준비 스냅샷에도 보존되며, OpenAI에만 중첩된 reasoning 옵션으로 전달됩니다. `run`은 effort를 덮어쓰지 않습니다. 다른 effort로 준비한 데이터와 기존 실행은 fingerprint·요청 해시·설정이 달라 Resume가 거부됩니다.
+
+미지정인 경우 이 새 필드는 직렬화에서 생략하여 기존 해시·trial ID·저장 버전 1.0을 유지합니다. Gemini 실행기는 effort가 지정된 전체 배치를 API 호출·잠금·결과 파일 생성 전에 거부합니다. Gemini를 사용하려면 effort 없이 별도 prepare합니다.
 
 ### 프롬프트 계약
 
@@ -290,7 +319,7 @@ Am I correct?
 | 준비 설정 해시 | PreparationSettings의 정규화된 JSON |
 | trial ID | 준비 설정 해시와 요청 인덱스 |
 
-`canonical_hash(model)`은 `model.model_dump(mode="json")`을 `sort_keys=True`, `separators=(",", ":")`, `ensure_ascii=False`, `allow_nan=False`로 JSON 직렬화한 UTF-8의 SHA-256입니다. 모델 dump의 null도 포함합니다. 버전 봉투나 파일의 들여쓰기·줄바꿈은 이 내용 해시에 포함하지 않습니다.
+`canonical_hash(model)`은 `model.model_dump(mode="json")`을 `sort_keys=True`, `separators=(",", ":")`, `ensure_ascii=False`, `allow_nan=False`로 JSON 직렬화한 UTF-8의 SHA-256입니다. 모델 dump에 남아 있는 null도 포함합니다. 단, 새 선택 필드 reasoning_effort가 None이면 하위 호환성을 위해 직렬화에서 생략합니다. 버전 봉투나 파일의 들여쓰기·줄바꿈은 이 내용 해시에 포함하지 않습니다.
 
 ```text
 fingerprint = canonical_hash(settings)
@@ -351,7 +380,7 @@ python -m moral_memory_eval.cli run \
 
 실제 실행 CLI는 프로젝트 루트 `.env`를 읽으며 이미 설정된 환경변수를 덮어쓰지 않습니다. 모델·키 우선순위와 SDK 재시도는 [LLMKit 설정](../llmkit/README.md)을 따릅니다. dry-run은 API 클라이언트를 생성하지 않으며 실행할 모델의 실제 접근 권한까지 검증하지 않습니다.
 
-실행 단계에는 repeats·seed·temperature·토큰 제한을 새로 받지 않습니다. 준비 파일을 바꾸지 않고 생성 옵션만 다른 값으로 보내는 것을 막기 위해서입니다. 모델·HTTP 설정은 실행 시 지정하고 결과에 보존합니다.
+실행 단계에는 repeats·seed·temperature·토큰 제한·reasoning effort를 새로 받지 않습니다. 준비 파일을 바꾸지 않고 생성 옵션만 다른 값으로 보내는 것을 막기 위해서입니다. 모델·HTTP 설정은 실행 시 지정하고 결과에 보존합니다.
 
 ### Python 인터페이스
 
@@ -528,4 +557,4 @@ mypy
 
 테스트는 네트워크를 차단하고 CREAK 변환, 제외·재현성, 해시·안전 저장, 메타데이터 유출 방지, 실제 준비 파일 호환, Verdict 검증, 부분 실패·Resume·중복 방지·전체 파이프라인과 지표를 Mock으로 확인합니다.
 
-실제 API의 모델 접근 권한, 제공자별 스키마 지원, 256토큰 제한의 적절성은 별도의 소수 호출로 확인해야 합니다. 순차 실행과 메모리 내 전체 파일 검증을 사용하며 대규모 병렬화·스트리밍·손상 파일 자동 복구는 지원하지 않습니다.
+실제 API의 모델 접근 권한, 제공자별 스키마 지원, 출력 토큰 제한의 적절성은 별도의 소수 호출로 확인해야 합니다. 순차 실행과 메모리 내 전체 파일 검증을 사용하며 대규모 병렬화·스트리밍·손상 파일 자동 복구는 지원하지 않습니다.

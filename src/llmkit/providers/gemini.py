@@ -7,7 +7,7 @@ from google import genai
 from google.genai import errors, types
 from pydantic import BaseModel
 
-from llmkit.config import ClientConfig, resolve_api_key
+from llmkit.config import ClientConfig, ensure_generation_supported, resolve_api_key
 from llmkit.errors import ProviderError, ResponseError
 from llmkit.schemas import LLMRequest, LLMResponse, TokenUsage
 
@@ -33,6 +33,7 @@ class GeminiProvider:
     def generate(
         self, request: LLMRequest, *, response_model: type[BaseModel] | None = None
     ) -> LLMResponse:
+        ensure_generation_supported("gemini", request.generation)
         system = "\n\n".join(m.content for m in request.messages if m.role == "system")
         contents: list[types.ContentUnionDict] = [
             types.Content(

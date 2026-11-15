@@ -216,3 +216,50 @@ def test_invalid_structured_output_is_normalized(name):
     with LLMClient(ClientConfig(provider=name, model="test"), provider=provider) as client:
         with pytest.raises(StructuredOutputError):
             client.ask("question", response_model=Answer)
+
+
+@pytest.mark.parametrize("effort", ["none", "low", "medium", "high", "xhigh", "max"])
+@pytest.mark.parametrize("structured", [False, True])
+def test_openai_reasoning_is_nested_in_real_sdk_payload(effort, structured):
+    from llmkit.schemas import GenerationConfig
+
+    body = openai_body('{"answer":"yes"}' if structured else "yes")
+    provider, sent = make_provider("openai", body)
+    request = conversation().model_copy(
+        update={"generation": GenerationConfig(max_output_tokens=1024, reasoning_effort=effort)}
+    )
+    try:
+        provider.generate(request, response_model=Answer if structured else None)
+    finally:
+        provider.close()
+    assert sent[0]["reasoning"] == {"effort": effort}
+    assert "reasoning_effort" not in sent[0]
+    assert sent[0]["max_output_tokens"] == 1024
+
+
+@pytest.mark.parametrize("structured", [False, True])
+def test_openai_omitted_reasoning_does_not_change_payload(structured):
+    body = openai_body('{"answer":"yes"}' if structured else "yes")
+    provider, sent = make_provider("openai", body)
+    try:
+        provider.generate(conversation(), response_model=Answer if structured else None)
+    finally:
+        provider.close()
+    assert "reasoning" not in sent[0]
+    assert "reasoning_effort" not in sent[0]
+
+
+@pytest.mark.parametrize("effort", ["none", "medium", "max"])
+def test_gemini_rejects_reasoning_without_sending_http(effort):
+    from llmkit import ConfigurationError
+
+    provider, sent = make_provider("gemini", gemini_body())
+    request = conversation().model_copy(
+        update={"generation": GenerationConfig(reasoning_effort=effort)}
+    )
+    try:
+        with pytest.raises(ConfigurationError, match="does not support reasoning_effort"):
+            provider.generate(request)
+    finally:
+        provider.close()
+    assert sent == []

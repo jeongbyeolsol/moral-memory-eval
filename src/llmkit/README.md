@@ -148,12 +148,26 @@ request = LLMRequest(
 | 모델 | 필드·검증 |
 | --- | --- |
 | `Message` | `role`: system/user/assistant, `content`: 길이 1 이상의 문자열 |
-| `GenerationConfig` | `temperature`: 0~2 또는 None, `max_output_tokens`: 양의 정수 또는 None |
+| `GenerationConfig` | `temperature`: 0~2 또는 None, `max_output_tokens`: 양의 정수 또는 None, `reasoning_effort`: 지원 문자열 또는 None |
 | `LLMRequest` | 하나 이상의 `messages`, 기본 `generation=GenerationConfig()` |
 
 System 메시지는 대화 메시지보다 앞에 있어야 하고 user 메시지가 하나 이상 필요합니다. 빈 메시지 목록, system만 있는 요청, 잘못된 역할, 필수 필드 누락은 Pydantic `ValidationError`입니다.
 
 생성 옵션의 `None`은 API에 보내지 않습니다. 모델 기본값을 사용하며 미지원 옵션을 조용히 삭제하거나 바꾸지 않습니다. 모델이 특정 temperature·토큰 옵션을 지원하는지는 실제 API가 결정합니다.
+
+### Reasoning effort
+
+```python
+from llmkit import GenerationConfig
+
+generation = GenerationConfig(max_output_tokens=1024, reasoning_effort="medium")
+```
+
+`reasoning_effort`는 `none`, `low`, `medium`, `high`, `xhigh`, `max` 중 하나 또는 None입니다. 문자열 `"none"`은 추론 수준을 명시한 값이고 Python None은 옵션 미지정이므로 구별합니다. OpenAI 어댑터가 `reasoning={"effort": "medium"}`처럼 Responses API의 중첩 형식으로 변환합니다. `reasoning_effort`라는 최상위 API 인수를 보내지 않습니다. 일반·구조화된 호출 모두 같은 매핑을 사용합니다.
+
+Gemini에는 이 OpenAI 옵션을 변환하거나 무시하지 않고 ConfigurationError를 발생시킵니다. 범용 클라이언트와 Gemini 어댑터 모두 호출 전에 검사하며, 실험 실행기는 요청 전체의 지원 여부를 결과 생성 전에 검사합니다. OpenAI의 개별 모델이 허용하는 수준은 API에서도 검증하므로 모든 모델이 여섯 값을 지원한다고 가정하지 않습니다.
+
+이 필드는 미지정이면 모델 dump·JSON에서 생략합니다. 기존 temperature·max_output_tokens의 null 표현은 바꾸지 않으므로 기존 요청의 정규화 해시를 유지합니다. 중첩된 요청·준비 설정·결과 모델에도 같은 직렬화 규칙이 적용됩니다. 값이 명시되면 그대로 저장되어 실행과 Resume의 생성 설정 비교에 포함됩니다.
 
 ### 응답 모델
 

@@ -1,12 +1,21 @@
 """Provider-independent models. Storage envelopes live in llmkit.io."""
 
-from typing import Annotated, Literal, TypeVar
+from typing import Annotated, Any, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    ValidationError,
+    model_serializer,
+    model_validator,
+)
 
 from llmkit.errors import StructuredOutputError
 
 ProviderName = Literal["openai", "gemini"]
+ReasoningEffort = Literal["none", "low", "medium", "high", "xhigh", "max"]
 NonEmptyString = Annotated[str, Field(min_length=1)]
 T = TypeVar("T", bound=BaseModel)
 
@@ -26,6 +35,16 @@ class GenerationConfig(SchemaModel):
     # None delegates to the model default; some models reject temperature.
     temperature: float | None = Field(default=None, ge=0, le=2)
     max_output_tokens: int | None = Field(default=None, gt=0)
+    reasoning_effort: ReasoningEffort | None = None
+
+    @model_serializer(mode="wrap")
+    def serialize_generation(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        # Preserve historical dumps (including nested dumps), hashes, and trial IDs.
+        # Only this new optional field is absent when unset; legacy nulls stay intact.
+        if self.reasoning_effort is None:
+            data.pop("reasoning_effort", None)
+        return data
 
 
 class LLMRequest(SchemaModel):

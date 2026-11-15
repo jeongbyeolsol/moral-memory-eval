@@ -5,7 +5,7 @@ import os
 from pydantic import Field
 
 from llmkit.errors import ConfigurationError
-from llmkit.schemas import NonEmptyString, ProviderName, SchemaModel
+from llmkit.schemas import GenerationConfig, NonEmptyString, ProviderName, SchemaModel
 
 
 class ClientConfig(SchemaModel):
@@ -34,3 +34,10 @@ def resolve_api_key(provider: ProviderName, api_key: str | None = None) -> str:
     if not key or not key.strip():
         raise ConfigurationError(f"Set {variable} or pass api_key explicitly")
     return key
+
+
+def ensure_generation_supported(provider: ProviderName, generation: GenerationConfig) -> None:
+    if generation.reasoning_effort is not None and provider != "openai":
+        raise ConfigurationError(
+            f"{provider} does not support reasoning_effort; prepare a separate request without it"
+        )

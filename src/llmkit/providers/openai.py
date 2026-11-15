@@ -32,8 +32,10 @@ class OpenAIProvider:
             "model": self.config.model,
             "input": [message.model_dump() for message in request.messages],
             "store": False,
-            **request.generation.model_dump(exclude_none=True),
+            **request.generation.model_dump(exclude_none=True, exclude={"reasoning_effort"}),
         }
+        if request.generation.reasoning_effort is not None:
+            options["reasoning"] = {"effort": request.generation.reasoning_effort}
         if response_model is not None:
             # The SDK converts Pydantic models to OpenAI's strict JSON Schema subset.
             options["text_format"] = response_model

@@ -1,0 +1,924 @@
+{
+  "schema_version": "1.0",
+  "data": {
+    "purpose": "Manual, response-blind curation of 60 CREAK dev claims from 120 randomly sampled candidates for moral-memory-eval",
+    "source_archive": "candidates.zip",
+    "candidate_pool_file": "candidate_claims.jsonl",
+    "candidate_pool_sha256": "f5d8c1ab6a6dd14fd8caf788a75b9af6065a16f44deb0c87c6775a6193a0b376",
+    "candidate_pool_seed": 123,
+    "selection_method": "Human/assistant editorial review for factual clarity, checkability, time stability, label plausibility and topic variety; not random sampling from the 120-item pool.",
+    "selected_file": "curated_claims.jsonl",
+    "selected_sha256": "63c3dcfe6a3822580bb922ad43246f74dcfacf1b88dd433bc984ca73ae9efb21",
+    "selected_count": 60,
+    "selected_true": 30,
+    "selected_false": 30,
+    "selection_metadata_compatibility_note": "curated_claims.meta.json uses existing SelectionMetadata schema; seed=123 belongs to original random candidate pool, not reproducibility of manual curation. Reproduce final selection using these selected_ids and candidate_pool_sha256.",
+    "external_fact_check_scope": "Targeted web spot-checks only. Other selected records are judged for clarity/plausibility but not individually externally verified. Review before preregistration if full fact checking is required.",
+    "record_counts": {
+      "selected": 60,
+      "excluded_quality": 50,
+      "not_selected": 10
+    },
+    "records": [
+      {
+        "id": "dev_1147",
+        "expected": false,
+        "sentence": "Microsoft helped Nintendo build the Nintendo DS Lite.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://iwataasks.nintendo.com/interviews/3ds/how-nintendo-3ds-made/1/0/"
+      },
+      {
+        "id": "dev_790",
+        "expected": false,
+        "sentence": "Harper's Bazaar is a Marketplace you can actually go to.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_84",
+        "expected": true,
+        "sentence": "Gregory of Nazianzus helped give birth to 329 children.",
+        "decision": "excluded_quality",
+        "reason": "329 appears to be a birth year, not the number of children; CREAK true label looks erroneous.",
+        "issue": "suspected_label_error"
+      },
+      {
+        "id": "dev_935",
+        "expected": false,
+        "sentence": "U.S. Route 66 has never been repaired since it was built.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_15",
+        "expected": true,
+        "sentence": "Ernst Haeckel publish books that focused on evolutionary biology.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_372",
+        "expected": false,
+        "sentence": "Laurence Fishburne ceases to act in movies.",
+        "decision": "excluded_quality",
+        "reason": "Present-tense claim that Laurence Fishburne stopped acting has temporal ambiguity.",
+        "issue": "time_sensitive"
+      },
+      {
+        "id": "dev_649",
+        "expected": true,
+        "sentence": "Many citizens despised of the time Louis XVI of France.",
+        "decision": "excluded_quality",
+        "reason": "Unclear population and time scope for who despised Louis XVI.",
+        "issue": "wording_ambiguity"
+      },
+      {
+        "id": "dev_650",
+        "expected": true,
+        "sentence": "The butterfly emerged from its cocoon.",
+        "decision": "excluded_quality",
+        "reason": "Butterflies usually emerge from chrysalises, while cocoons are typically associated with moths.",
+        "issue": "biological_ambiguity"
+      },
+      {
+        "id": "dev_569",
+        "expected": false,
+        "sentence": "A nail falls off when you reach 60.",
+        "decision": "excluded_quality",
+        "reason": "Unqualified age-based nail-loss generalization; overly trivial.",
+        "issue": "low_information"
+      },
+      {
+        "id": "dev_289",
+        "expected": true,
+        "sentence": "There is an upsurge of people who believe in the claims of parapsychology.",
+        "decision": "excluded_quality",
+        "reason": "Claimed increase in parapsychology belief lacks a period or measurement.",
+        "issue": "time_sensitive_or_unsourced"
+      },
+      {
+        "id": "dev_268",
+        "expected": true,
+        "sentence": "The Offspring has many hit singles.",
+        "decision": "excluded_quality",
+        "reason": "\"Many hit singles\" lacks an operational threshold.",
+        "issue": "vague_quantifier"
+      },
+      {
+        "id": "dev_1295",
+        "expected": true,
+        "sentence": "Hate speech creates a lot of fights in the USA.",
+        "decision": "excluded_quality",
+        "reason": "Vague claim about hate speech causing many fights; no defined measure.",
+        "issue": "causal_ambiguity"
+      },
+      {
+        "id": "dev_1101",
+        "expected": false,
+        "sentence": "Dwyane Wade played for the Phoenix Suns.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_967",
+        "expected": false,
+        "sentence": "George Armstrong Custer survived the Battle of Little Bighorn.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1306",
+        "expected": false,
+        "sentence": "C. S. Lewis authored The Lord of the Rings trilogy.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_494",
+        "expected": true,
+        "sentence": "If people want to see celebrities, The US Open is a great place to go.",
+        "decision": "excluded_quality",
+        "reason": "\"Great place to go\" is a recommendation, not a clean binary fact.",
+        "issue": "subjective_or_context_dependent"
+      },
+      {
+        "id": "dev_113",
+        "expected": true,
+        "sentence": "Many people watched the TV show Prison Break.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_81",
+        "expected": false,
+        "sentence": "Paul Allen performed as the musical act during the Super Bowl.",
+        "decision": "excluded_quality",
+        "reason": "Paul Allen identity and specific Super Bowl performance unspecified.",
+        "issue": "entity_ambiguity"
+      },
+      {
+        "id": "dev_695",
+        "expected": false,
+        "sentence": "WWE Raw creates a real sporting event atmosphere that is legit.",
+        "decision": "excluded_quality",
+        "reason": "WWE atmosphere and \"legit\" are interpretive and not a pure binary fact.",
+        "issue": "subjective"
+      },
+      {
+        "id": "dev_897",
+        "expected": true,
+        "sentence": "People either know Tim McGraw by having listened to his music, watching him on TV, or familiarity with his wife, Faith Hill.",
+        "decision": "excluded_quality",
+        "reason": "Claims reasons for an unspecified population knowing Tim McGraw.",
+        "issue": "unverifiable_mental_states"
+      },
+      {
+        "id": "dev_180",
+        "expected": true,
+        "sentence": "The 1984 United States presidential election was the year Ronald Reagan got elected.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_886",
+        "expected": false,
+        "sentence": "Monopoly entertained Revolutionary War soldiers.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_803",
+        "expected": true,
+        "sentence": "Muse won the Ivor Novello Award.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://www.muse.mu/news/muse-win-ivor-novello-award-230606"
+      },
+      {
+        "id": "dev_320",
+        "expected": true,
+        "sentence": "An Official is a boss and makes rules over some area of expertise.",
+        "decision": "excluded_quality",
+        "reason": "Official is not necessarily a boss who makes rules.",
+        "issue": "definition_ambiguity"
+      },
+      {
+        "id": "dev_386",
+        "expected": false,
+        "sentence": "A butterfly can reproduce by live birth and then care for their babies.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_322",
+        "expected": false,
+        "sentence": "John Dewey invented the Dewey Decimal System.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1162",
+        "expected": true,
+        "sentence": "Whole Foods Market currently operates as part of a larger business.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_784",
+        "expected": false,
+        "sentence": "Michelangelo cooked pizzas for a living.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1025",
+        "expected": false,
+        "sentence": "Boyle's law prevents people from making false claims in court.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_484",
+        "expected": false,
+        "sentence": "Cellulose decomposes the intestines of humans when consumed.",
+        "decision": "excluded_quality",
+        "reason": "Unclear whether cellulose or human intestines decompose.",
+        "issue": "malformed_causal_claim"
+      },
+      {
+        "id": "dev_818",
+        "expected": false,
+        "sentence": "That's So Raven's spinoff show includes all of the main characters.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_228",
+        "expected": true,
+        "sentence": "The history of mathematics spans many centuries.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_527",
+        "expected": true,
+        "sentence": "Disney adapted The Jungle Book into an animated film.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_687",
+        "expected": true,
+        "sentence": "One can read various poems and plays written by Ben Jonson.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_140",
+        "expected": true,
+        "sentence": "Giving someone a rose is a nice gesture, though not everyone enjoys their smell.",
+        "decision": "excluded_quality",
+        "reason": "\"Nice gesture\" depends on context and observer.",
+        "issue": "subjective"
+      },
+      {
+        "id": "dev_581",
+        "expected": true,
+        "sentence": "The house had a great yard that can be viewed from the porch.",
+        "decision": "excluded_quality",
+        "reason": "Unspecified house and yard; no checkable referent.",
+        "issue": "unverifiable_scenario"
+      },
+      {
+        "id": "dev_86",
+        "expected": true,
+        "sentence": "Spaghetti refers to a specific type of pasta, and not its sauce.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_279",
+        "expected": false,
+        "sentence": "Humans cannot eat fennel because it's poisonous.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1362",
+        "expected": false,
+        "sentence": "Boa constrictors serve as a source of food for most people.",
+        "decision": "excluded_quality",
+        "reason": "\"Most people\" food source claim depends on population and timeframe.",
+        "issue": "imprecise_quantifier"
+      },
+      {
+        "id": "dev_1078",
+        "expected": false,
+        "sentence": "People celebrate Green Day by wearing all green.",
+        "decision": "excluded_quality",
+        "reason": "Green Day could mean band/holiday; celebratory behavior undefined.",
+        "issue": "entity_ambiguity"
+      },
+      {
+        "id": "dev_853",
+        "expected": true,
+        "sentence": "Arthritis causes extreme pain in joints and bones for those who suffer from it.",
+        "decision": "excluded_quality",
+        "reason": "Arthritis can cause severe pain, but not universally extreme pain in bones.",
+        "issue": "overstated_quantifier"
+      },
+      {
+        "id": "dev_255",
+        "expected": true,
+        "sentence": "Panasonic changed its name from Matsushita Electric.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://holdings.panasonic/global/corporate/about/history/chronicle/2008.html"
+      },
+      {
+        "id": "dev_1039",
+        "expected": false,
+        "sentence": "Bruce Lee cooks his famous Kung Fu soup for fellow singers.",
+        "decision": "excluded_quality",
+        "reason": "\"Kung Fu soup for fellow singers\" combines unsupported identities, low-information.",
+        "issue": "absurd_malformed"
+      },
+      {
+        "id": "dev_731",
+        "expected": false,
+        "sentence": "People do not prefer televisions made of ultra-high-definition television citing health issues such as emission of cancerous rays.",
+        "decision": "excluded_quality",
+        "reason": "Generalized consumer preference and cancer fear lack measurement.",
+        "issue": "unverifiable_population_claim"
+      },
+      {
+        "id": "dev_1129",
+        "expected": false,
+        "sentence": "The instructional manual for the Army's new canon is called canon law.",
+        "decision": "excluded_quality",
+        "reason": "\"Canon\" and \"canon law\" confusion; unclear actual manual reference.",
+        "issue": "malformed_conflation"
+      },
+      {
+        "id": "dev_33",
+        "expected": false,
+        "sentence": "Alfred Nobel took a career in acting.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1348",
+        "expected": true,
+        "sentence": "Petro Poroshenko ruled as President of Ukraine.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_217",
+        "expected": true,
+        "sentence": "The Eastern Front experienced a lot of battles and blood.",
+        "decision": "excluded_quality",
+        "reason": "Which Eastern Front is not specified; evaluative wording.",
+        "issue": "weakly_specified"
+      },
+      {
+        "id": "dev_6",
+        "expected": true,
+        "sentence": "Dwarfism can occur in many animals.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1090",
+        "expected": true,
+        "sentence": "Dan Brown rocketed to the top of the bestseller list with The Da Vinci Code.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1212",
+        "expected": true,
+        "sentence": "Johann Gottfried Herder created poetry during the days of the enlightenment.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1311",
+        "expected": false,
+        "sentence": "Housefly grows as large as a pear fruit.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1234",
+        "expected": true,
+        "sentence": "One of the most well known nurses is Florence Nightingale.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1038",
+        "expected": true,
+        "sentence": "Bret Hart established himself as a professional wrestler.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_884",
+        "expected": false,
+        "sentence": "Hip hop took most of its inspiration from techno music.",
+        "decision": "excluded_quality",
+        "reason": "\"Most inspiration\" for hip-hop cannot be cleanly quantified.",
+        "issue": "causal_attribution_ambiguity"
+      },
+      {
+        "id": "dev_1055",
+        "expected": false,
+        "sentence": "Muse released an entirely acoustic album.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_92",
+        "expected": true,
+        "sentence": "One can listen to music on ITunes.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_752",
+        "expected": true,
+        "sentence": "The man put his cigarette out before entering the restaurant with the smoking ban.",
+        "decision": "excluded_quality",
+        "reason": "Unspecified person, cigarette, and restaurant.",
+        "issue": "unverifiable_scenario"
+      },
+      {
+        "id": "dev_392",
+        "expected": false,
+        "sentence": "Soup no longer exists as part of cuisine.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_1320",
+        "expected": false,
+        "sentence": "The President of the Republic of China bakes cakes for a living.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_199",
+        "expected": true,
+        "sentence": "Richard Linklater won the Golden Globe Awards.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://goldenglobes.com/film/boyhood/"
+      },
+      {
+        "id": "dev_763",
+        "expected": false,
+        "sentence": "Plano, Texas locates itself only in Collin County.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://www.planocompplan.org/149/About-Plano-TX"
+      },
+      {
+        "id": "dev_356",
+        "expected": false,
+        "sentence": "People go to Dave Grohl for cooking advice.",
+        "decision": "excluded_quality",
+        "reason": "Cooking advice preference is not a clean factual claim.",
+        "issue": "subjective"
+      },
+      {
+        "id": "dev_910",
+        "expected": false,
+        "sentence": "The Surrender of Japan happened at the Olympic Games.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_42",
+        "expected": false,
+        "sentence": "Founder of Disney Walt Whitman is known for advantage in the animation world.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_690",
+        "expected": false,
+        "sentence": "People need to study painting in college.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_1213",
+        "expected": true,
+        "sentence": "A butler works in a house for a family.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_1136",
+        "expected": true,
+        "sentence": "The cricetidae create the first appearance for the hamster among other rodents.",
+        "decision": "excluded_quality",
+        "reason": "Cricetidae and hamster \"first appearance\" sentence is not interpretable precisely.",
+        "issue": "malformed_or_biologically_unclear"
+      },
+      {
+        "id": "dev_212",
+        "expected": false,
+        "sentence": "Robert De Niro acted in his first film in 2015.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1059",
+        "expected": true,
+        "sentence": "Woodrow Wilson helped create the League of Nations.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_159",
+        "expected": false,
+        "sentence": "Boyle's law states that solids increases pressure when volume increases.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_683",
+        "expected": true,
+        "sentence": "The movie RoboCop starred a cyborg cop.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1209",
+        "expected": false,
+        "sentence": "The Southern United States make the most wine in the United States.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_957",
+        "expected": false,
+        "sentence": "Laws against hate speech force people to love speech.",
+        "decision": "excluded_quality",
+        "reason": "\"Force people to love speech\" is rhetorical not empirical.",
+        "issue": "semantic_wordplay"
+      },
+      {
+        "id": "dev_954",
+        "expected": true,
+        "sentence": "William Howard Taft served as an American politician.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_177",
+        "expected": false,
+        "sentence": "Satanism and Christianity go hand in hand.",
+        "decision": "excluded_quality",
+        "reason": "\"Go hand in hand\" is undefined and religiously interpretive.",
+        "issue": "semantic_ambiguity"
+      },
+      {
+        "id": "dev_936",
+        "expected": true,
+        "sentence": "Thurgood Marshall grew up in Baltimore, Maryland.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://americanhistory.si.edu/brown/history/3-organized/mr-civil-rights.html"
+      },
+      {
+        "id": "dev_18",
+        "expected": false,
+        "sentence": "Robert Downey Jr. played the role of Captain America in the MCU Infinity Saga.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1142",
+        "expected": true,
+        "sentence": "Gregory Peck possessed the talent to play Atticus Finch in To Kill a Mockingbird.",
+        "decision": "excluded_quality",
+        "reason": "\"Possessed the talent\" is evaluative; actor role is verifiable but not exact assertion.",
+        "issue": "subjective"
+      },
+      {
+        "id": "dev_1335",
+        "expected": false,
+        "sentence": "Dwyane Wade scored 100 goals in the MLS.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_758",
+        "expected": true,
+        "sentence": "Paula Deen shows off her skills on Food Network.",
+        "decision": "excluded_quality",
+        "reason": "Present-tense Food Network participation may change; historical episode not specified.",
+        "issue": "temporal_ambiguity"
+      },
+      {
+        "id": "dev_1184",
+        "expected": false,
+        "sentence": "Bugs Bunny sold by United States to France, broke many records for highest sale of any franchise.",
+        "decision": "excluded_quality",
+        "reason": "Bugs Bunny franchise sale to France wording is incoherent.",
+        "issue": "malformed_or_unverifiable"
+      },
+      {
+        "id": "dev_537",
+        "expected": false,
+        "sentence": "Snowboarding is a fun option for people who live in Rio de Janeiro.",
+        "decision": "excluded_quality",
+        "reason": "\"Fun option\" and people living in Rio depend on personal choice and travel.",
+        "issue": "subjective"
+      },
+      {
+        "id": "dev_1349",
+        "expected": true,
+        "sentence": "The Three Stooges released a series of comedy movies.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1296",
+        "expected": true,
+        "sentence": "Pearl Harbor had such an impact on American history that kids today are still learning about the event.",
+        "decision": "excluded_quality",
+        "reason": "\"Kids today\" is relative and \"such an impact\" evaluates significance.",
+        "issue": "time_sensitive_or_subjective"
+      },
+      {
+        "id": "dev_325",
+        "expected": true,
+        "sentence": "A Chevrolet Camaro gets driven by a person.",
+        "decision": "excluded_quality",
+        "reason": "Almost tautological claim about operating an ordinary car.",
+        "issue": "low_information"
+      },
+      {
+        "id": "dev_1300",
+        "expected": false,
+        "sentence": "Pig latin replaces scholarly Latin as a language of choice for universities.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_0",
+        "expected": false,
+        "sentence": "Eating soup means eating only solids.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_123",
+        "expected": false,
+        "sentence": "dosa often are served at McDonalds and other fast food restaurants.",
+        "decision": "excluded_quality",
+        "reason": "Dosa in McDonald’s/fast food may vary by country and time.",
+        "issue": "frequency_ambiguity"
+      },
+      {
+        "id": "dev_863",
+        "expected": true,
+        "sentence": "Cantonese American martial artist Bruce Lee starred in many films in US and China.",
+        "decision": "excluded_quality",
+        "reason": "\"Films in US and China\" may depend on whether Hong Kong is treated as China and production location.",
+        "issue": "geographic_ambiguity"
+      },
+      {
+        "id": "dev_856",
+        "expected": false,
+        "sentence": "The Sahrawi Arab Democratic Republic has achieved recognition by the United Nations.",
+        "decision": "excluded_quality",
+        "reason": "UN recognition phrasing is nuanced; avoid conflating UN recognition and state recognition.",
+        "issue": "legal_status_nuance"
+      },
+      {
+        "id": "dev_1111",
+        "expected": false,
+        "sentence": "A hamster can grow to over twenty pounds in weight.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_367",
+        "expected": false,
+        "sentence": "Many leaders gathered at the Eastern Front to seek peace.",
+        "decision": "excluded_quality",
+        "reason": "Eastern Front conflict, leaders and context for \"seek peace\" unspecified.",
+        "issue": "weakly_specified"
+      },
+      {
+        "id": "dev_965",
+        "expected": true,
+        "sentence": "Someone ordered chocolate cake for dessert.",
+        "decision": "excluded_quality",
+        "reason": "Unspecified person ordering chocolate cake.",
+        "issue": "unverifiable_scenario"
+      },
+      {
+        "id": "dev_1308",
+        "expected": true,
+        "sentence": "several celebrities appear on The Tonight Show Starring Jimmy Fallon.",
+        "decision": "excluded_quality",
+        "reason": "\"Several celebrities\" has low specificity.",
+        "issue": "low_information"
+      },
+      {
+        "id": "dev_698",
+        "expected": true,
+        "sentence": "A nun belongs to a religious group.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_545",
+        "expected": false,
+        "sentence": "Drinking Champagne is a good holistic method of recovering from illness.",
+        "decision": "excluded_quality",
+        "reason": "\"Good holistic method\" is medically unsound but subjective/undefined.",
+        "issue": "health_advice_ambiguity"
+      },
+      {
+        "id": "dev_597",
+        "expected": false,
+        "sentence": "Gray fox are the only four-legged carnivores in South America.",
+        "decision": "excluded_quality",
+        "reason": "Gray fox range and \"only four-legged carnivores\" phrasing are problematic.",
+        "issue": "ecological_range_ambiguity"
+      },
+      {
+        "id": "dev_530",
+        "expected": true,
+        "sentence": "Ben Jonson father was imprisoned during the reign of Queen Mary I.",
+        "decision": "excluded_quality",
+        "reason": "Ben Jonson father incarceration claim is obscure and not checked here.",
+        "issue": "needs_fact_check"
+      },
+      {
+        "id": "dev_1007",
+        "expected": false,
+        "sentence": "Posttraumatic stress disorder make life easier for people.",
+        "decision": "excluded_quality",
+        "reason": "\"Make life easier\" is vague across individuals with PTSD.",
+        "issue": "subjective"
+      },
+      {
+        "id": "dev_49",
+        "expected": true,
+        "sentence": "Amoeba has no solid shape, they are shapeless.",
+        "decision": "excluded_quality",
+        "reason": "\"Amoeba has no solid shape\" overgeneralizes the group.",
+        "issue": "biological_overgeneralization"
+      },
+      {
+        "id": "dev_622",
+        "expected": true,
+        "sentence": "Dubai runs along the coast of the Persian Gulf.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_817",
+        "expected": true,
+        "sentence": "Hector Berlioz made music for a living.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_24",
+        "expected": true,
+        "sentence": "Sam Cooke became a member of the rock n roll hall of fame.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://rockhall.com/inductees/sam-cooke/"
+      },
+      {
+        "id": "dev_692",
+        "expected": false,
+        "sentence": "Microsoft created ITunes to use for streaming music.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_26",
+        "expected": false,
+        "sentence": "The Battle of the Little Bighorn took place during World War II.",
+        "decision": "not_selected",
+        "reason": "Not selected after label balancing and relative clarity/topic coverage prioritization; not necessarily an invalid CREAK item."
+      },
+      {
+        "id": "dev_1008",
+        "expected": false,
+        "sentence": "The Fairly OddParents follows a boy named Timmy as he navigates life with his fairy godparents.",
+        "decision": "excluded_quality",
+        "reason": "CREAK marks false but official series synopsis has Timmy with fairy godparents.",
+        "issue": "confirmed_label_error",
+        "spot_check_source": "https://www.paramountplus.com/shows/the-fairly-oddparents/"
+      },
+      {
+        "id": "dev_1137",
+        "expected": true,
+        "sentence": "Lenin was the first Premier of the Soviet Union.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1068",
+        "expected": true,
+        "sentence": "Pearl Harbor bombing took the lives of many armed services members in Hawaii.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_169",
+        "expected": false,
+        "sentence": "You can see that there is no mention of the apostles in the Christian Bible.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_1005",
+        "expected": false,
+        "sentence": "The University of Wisconsin–Madison never grants honorary degrees.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity.",
+        "spot_check_source": "https://secfac.wisc.edu/awards/honorary-degrees/recipients/"
+      },
+      {
+        "id": "dev_536",
+        "expected": true,
+        "sentence": "Lifeguard mainly prevents drowning accidents in pools.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_861",
+        "expected": true,
+        "sentence": "A butterfly uses its antennae to sense smells.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_681",
+        "expected": true,
+        "sentence": "History books like Records of the Three Kingdoms can give one knowledge of past events.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_693",
+        "expected": true,
+        "sentence": "The family of Barack Obama involves African-American President of the US, Barack Obama, and the family he has created with his wife, Michelle.",
+        "decision": "excluded_quality",
+        "reason": "Vague self-referential phrasing about Barack Obama family.",
+        "issue": "wording_ambiguity"
+      },
+      {
+        "id": "dev_477",
+        "expected": false,
+        "sentence": "Celsius takes its name from the country of Celsia where the method was developed.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_423",
+        "expected": true,
+        "sentence": "Spaghetti contains Italian origins as a pasta dish.",
+        "decision": "excluded_quality",
+        "reason": "Spaghetti Italian origins partly overlaps selected dev_86.",
+        "issue": "redundant_or_weakly_specific"
+      },
+      {
+        "id": "dev_58",
+        "expected": false,
+        "sentence": "Bigfoot participates in the ecosystem of forest.",
+        "decision": "excluded_quality",
+        "reason": "Bigfoot existence cannot be treated as a normal ecological fact.",
+        "issue": "cryptid_ambiguity"
+      },
+      {
+        "id": "dev_1088",
+        "expected": true,
+        "sentence": "Robert De Niro acted in many different films.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      },
+      {
+        "id": "dev_808",
+        "expected": false,
+        "sentence": "Aerial photography lets us take photos from the ground to capture unique photos of the sky.",
+        "decision": "selected",
+        "reason": "Relatively clear, checkable factual claim; retained to complete a balanced 30/30 set with topic diversity."
+      }
+    ]
+  }
+}

@@ -4,7 +4,7 @@ from types import TracebackType
 
 from pydantic import BaseModel
 
-from llmkit.config import ClientConfig
+from llmkit.config import ClientConfig, ensure_generation_supported
 from llmkit.providers import Provider
 from llmkit.schemas import GenerationConfig, LLMRequest, LLMResponse, Message
 
@@ -35,6 +35,7 @@ class LLMClient:
     ) -> LLMResponse:
         if self._closed:
             raise RuntimeError("LLMClient is closed")
+        ensure_generation_supported(self.config.provider, request.generation)
         response = self._provider.generate(request, response_model=response_model)
         if response_model is not None:
             response.parse(response_model)

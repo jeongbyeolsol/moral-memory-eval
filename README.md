@@ -73,7 +73,7 @@ python -m moral_memory_eval.cli prepare \
 
 문항 30개 × 프로필 3개 × 반복 2회이면 **180개 요청**을 생성합니다. 출력 디렉터리가 이미 있으면 새 이름을 지정합니다. 프로필·문항·프롬프트·생성 옵션을 바꿀 때도 새 디렉터리로 준비합니다.
 
-기본 출력 토큰 제한은 256이며 `--max-output-tokens`로 바꿀 수 있습니다. `temperature`는 기본값을 강제하지 않고 필요할 때 `--temperature`로 지정합니다. 실행 단계에서 이 생성 설정을 덮어쓰지 않습니다.
+현재 `prepare` CLI의 기본 출력 토큰 제한은 1024이며 `--max-output-tokens`로 바꿀 수 있습니다. `temperature`는 기본값을 강제하지 않고 필요할 때 `--temperature`로 지정합니다. 실행 단계에서 이 생성 설정을 덮어쓰지 않습니다.
 
 ```text
 inputs/generated/experiment-v1/
@@ -86,6 +86,24 @@ inputs/generated/experiment-v1/
 python -m moral_memory_eval.cli verify-prepared \
   --input-dir inputs/generated/experiment-v1
 ```
+
+### GPT-6 Luna의 reasoning effort 고정
+
+아래는 현재 `for_debug`에 보존된 선정 파일로 설정을 확인하는 예시입니다. 본실험에는 `--claims`를 검토·확정한 명제 파일로 바꾸고 새 출력 디렉터리를 사용합니다.
+
+새 준비 디렉터리에 `medium`을 기록합니다. 이 명령은 API를 호출하지 않습니다.
+
+```bash
+python -m moral_memory_eval.cli prepare \
+  --claims dataset/selected_data/for_debug/main_claims.jsonl \
+  --profiles configs/profiles.json \
+  --profile-ids candidate_0 candidate_5 no_profile \
+  --repeats 2 --seed 42 --max-output-tokens 1024 \
+  --reasoning-effort medium \
+  --output-dir inputs/generated/gpt6-luna-medium-check-v1
+```
+
+모델은 실행 시 `--provider openai --model gpt-6-luna`로 선택합니다. `prepare`는 모델 ID를 받지 않고 생성 옵션을 고정합니다. `--reasoning-effort`는 `none`, `low`, `medium`, `high`, `xhigh`, `max`를 지원하며 생략하면 기존 동작을 유지합니다. Gemini에는 이 옵션을 지정한 요청을 실행할 수 없습니다.
 
 ## 4. 실행과 이어 실행
 

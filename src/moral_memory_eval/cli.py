@@ -3,13 +3,14 @@
 import argparse
 import tempfile
 from pathlib import Path
+from typing import get_args
 
 from dotenv import load_dotenv
 from pydantic import ValidationError
 
 from llmkit import ClientConfig, DataError, GenerationConfig, LLMClient, LLMKitError
 from llmkit.io import save_json
-from llmkit.schemas import ProviderName
+from llmkit.schemas import ProviderName, ReasoningEffort
 from moral_memory_eval._storage import publish_files, require_new, sha256_file
 from moral_memory_eval.analysis import analyze_run
 from moral_memory_eval.execution import preview_run, run_prepared
@@ -40,8 +41,9 @@ def main() -> None:
     prepare.add_argument("--profile-ids", nargs="+", required=True)
     prepare.add_argument("--repeats", type=int, default=1)
     prepare.add_argument("--seed", type=int)
-    prepare.add_argument("--max-output-tokens", type=int, default=256)
+    prepare.add_argument("--max-output-tokens", type=int, default=1024)
     prepare.add_argument("--temperature", type=float)
+    prepare.add_argument("--reasoning-effort", choices=get_args(ReasoningEffort))
     prepare.add_argument("--output-dir", type=Path, required=True)
 
     selection = commands.add_parser(
@@ -97,6 +99,7 @@ def main() -> None:
                 generation=GenerationConfig(
                     max_output_tokens=args.max_output_tokens,
                     temperature=args.temperature,
+                    reasoning_effort=args.reasoning_effort,
                 ),
             )
             print(f"Prepared {metadata.case_count} cases in {args.output_dir}; no API calls")
