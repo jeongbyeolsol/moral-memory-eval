@@ -71,7 +71,7 @@ python -m moral_memory_eval.cli verify-selection \
 python -m moral_memory_eval.cli prepare \
   --claims dataset/selected_data/curated_claims_bundle/curated_claims.jsonl \
   --profiles configs/profiles.json \
-  --profile-ids candidate_0 candidate_5 no_profile \
+  --profile-ids moral_negative moral_positive no_profile \
   --repeats 2 --seed 42 \
   --output-dir inputs/generated/experiment-v1
 ```
