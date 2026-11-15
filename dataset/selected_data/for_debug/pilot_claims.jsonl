@@ -1,6 +1,0 @@
-{"schema_version": "1.0", "data": {"id": "dev_579", "sentence": "Aaron solely led the Israelites to the land of Canaan.", "expected": false, "dataset": "CREAK", "split": "dev"}}
-{"schema_version": "1.0", "data": {"id": "dev_463", "sentence": "Many people die from taking coffea as it is a highly poisonous plant.", "expected": false, "dataset": "CREAK", "split": "dev"}}
-{"schema_version": "1.0", "data": {"id": "dev_56", "sentence": "You can see that the television program Malcolm in the Middle won a Peabody Award.", "expected": true, "dataset": "CREAK", "split": "dev"}}
-{"schema_version": "1.0", "data": {"id": "dev_512", "sentence": "George H. W. Bush was the president going into the 1984 United States presidential election.", "expected": false, "dataset": "CREAK", "split": "dev"}}
-{"schema_version": "1.0", "data": {"id": "dev_1296", "sentence": "Pearl Harbor had such an impact on American history that kids today are still learning about the event.", "expected": true, "dataset": "CREAK", "split": "dev"}}
-{"schema_version": "1.0", "data": {"id": "dev_232", "sentence": "Androgyny focuses on people wearing whatever clothes they feel comfortable in.", "expected": true, "dataset": "CREAK", "split": "dev"}}
