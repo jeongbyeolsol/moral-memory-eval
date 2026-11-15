@@ -8,6 +8,7 @@ name = "moral-memory-eval"
 version = "0.1.0"
 description = "Evaluating the effects of user moral reputation on LLM factual judgment and confidence"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = [
     "pydantic>=2.10,<3",
@@ -32,6 +33,9 @@ analysis = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools]
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "third_party/CREAK-LICENSE.txt"]
 
 [tool.setuptools.package-data]
 llmkit = ["py.typed"]

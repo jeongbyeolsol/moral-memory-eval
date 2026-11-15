@@ -1,7 +1,6 @@
 import fcntl
 import json
 import sys
-from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
@@ -10,7 +9,7 @@ from llmkit import ClientConfig, DataError, LLMClient, LLMResponse, ProviderErro
 from llmkit.errors import StructuredOutputError
 from llmkit.io import load_json, load_jsonl, save_json, save_jsonl
 from moral_memory_eval import cli, execution, preparation
-from moral_memory_eval._storage import sha256_file
+from moral_memory_eval._storage import resolve_reference, sha256_file
 from moral_memory_eval.analysis import analyze_results, analyze_run
 from moral_memory_eval.execution import (
     ExecutionError,
@@ -107,8 +106,8 @@ def test_prepared_requests_are_executed_exactly_and_all_metadata_matches(
     monkeypatch.setattr(preparation, "build_cases", forbidden)
     monkeypatch.setattr(preparation, "build_request", forbidden)
     # Both snapshot paths may be unavailable; execution must still work offline with a mock.
-    Path(metadata.selection_path).unlink()
-    Path(metadata.profiles_path).unlink()
+    resolve_reference(metadata.selection_path, prepared, metadata.path_base).unlink()
+    resolve_reference(metadata.profiles_path, prepared, metadata.path_base).unlink()
     output = tmp_path / "results.jsonl"
     provider, saved = execute(prepared, output)
     assert saved == metadata.case_count == 8
@@ -234,7 +233,12 @@ def test_resume_rejects_different_model_and_preparation(prepared, tmp_path):
         run_prepared(client, prepared, output, resume=True)
     metadata, _, _ = load_prepared_inputs(prepared)
     other = tmp_path / "other-input"
-    prepare_requests(Path(metadata.selection_path), Path(metadata.profiles_path), ["moral"], other)
+    prepare_requests(
+        resolve_reference(metadata.selection_path, prepared, metadata.path_base),
+        resolve_reference(metadata.profiles_path, prepared, metadata.path_base),
+        ["moral"],
+        other,
+    )
     with pytest.raises(DataError, match="does not match"):
         execute(other, output, fake, resume=True)
     assert fake.calls == [] and output.read_bytes() == before

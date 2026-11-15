@@ -76,6 +76,12 @@ requests.jsonl + manifest.jsonl + preparation.json
 
 이 예시는 Verdict 객체를 파일에 저장하는 봉투 형식입니다. API에 요구하는 답변 JSON은 봉투 없이 `is_true`, `confidence` 두 필드만 가집니다. 원본 CREAK는 배포 형식을 그대로 읽으므로 `schema_version` 봉투가 없습니다.
 
+### 이동 가능한 경로 참조
+
+새 SelectionMetadata와 PreparationMetadata는 `path_base: "artifact"`를 기록합니다. source_path는 `.meta.json` 디렉터리 기준, selection_path·profiles_path는 `preparation.json` 디렉터리 기준 상대경로입니다. 저장할 때 심볼릭 링크를 실제 개인 경로로 펼치지 않습니다. 코드에서는 `resolve_reference(value, artifact_dir, path_base)`로 해석합니다.
+
+이 필드가 없는 이전 메타데이터는 기존 절대경로·작업 디렉터리 기준 경로 해석을 유지하여 읽을 수 있습니다. 새 저장의 경로 참조는 settings fingerprint에 포함되지 않아 문항 내용·요청·trial ID를 바꾸지 않습니다. 저장소를 옮길 때 원본·선정·프로필의 상대 디렉터리 구조를 유지하세요. 원본 없이 준비 파일을 실행하는 동작도 유지합니다.
+
 ### 주요 모델
 
 | 모델 | 핵심 필드·역할 |
@@ -135,7 +141,7 @@ requests.jsonl + manifest.jsonl + preparation.json
 
 ## 4. CREAK 로더
 
-원본 파일은 확장자와 관계없이 JSONL로 읽습니다. 현재 로컬 경로는 `dataset/creak/dev.jsonl`, `train.jsonl`이고, 외부 디렉터리를 가리키는 `dataset/creak` 링크는 변경하지 않습니다.
+원본 파일은 확장자와 관계없이 JSONL로 읽습니다. 프로젝트 상대 경로 `dataset/creak/dev.jsonl` 등을 사용하며 로컬 디렉터리와 심볼릭 링크를 모두 읽을 수 있습니다. 원본 파일·링크는 변경하지 않습니다.
 
 | 원본 필드 | Claim 변환 |
 | --- | --- |
@@ -204,7 +210,7 @@ python -m moral_memory_eval.cli sample \
 | 필드 | 의미 |
 | --- | --- |
 | `dataset`, `split` | CREAK와 지정 분할 |
-| `source_path`, `source_sha256` | 실제 원본 경로와 원본 바이트 해시 |
+| `source_path`, `source_sha256` | 메타데이터 기준 상대 원본 경로와 원본 바이트 해시 |
 | `seed`, `n_true`, `n_false` | 샘플링 설정 |
 | `selected_ids` | 저장 순서 그대로의 ID 목록 |
 | `selected_sha256` | 선정 JSONL의 실제 파일 바이트 해시 |
@@ -255,12 +261,12 @@ python -m moral_memory_eval.cli prepare \
 
 ### GPT-6 Luna / medium 준비와 실행
 
-아래는 현재 `for_debug`에 보존된 선정 파일로 설정을 확인하는 예시입니다. 본실험에는 `--claims`를 검토·확정한 명제 파일로 바꾸고 새 출력 디렉터리를 사용합니다.
+아래는 동봉된 검토 문항을 사용하는 예시입니다. 연구 설계에 맞게 문항·프로필·반복 수를 선택하세요.
 
 ```bash
 # API 없이 생성 설정을 보존: 기존 디렉터리 대신 새 이름 사용
 python -m moral_memory_eval.cli prepare \
-  --claims dataset/selected_data/for_debug/main_claims.jsonl \
+  --claims dataset/selected_data/curated_claims_bundle/curated_claims.jsonl \
   --profiles configs/profiles.json \
   --profile-ids candidate_0 candidate_5 no_profile \
   --repeats 2 --seed 42 --max-output-tokens 1024 \
@@ -540,13 +546,13 @@ python -m experiments.moral_memory.analyze outputs/legacy-run.jsonl \
   --output outputs/legacy-summary.json
 ```
 
-기존 ExperimentResult와 새 PreparedResult는 서로 다른 스키마이며 자동 변환하지 않습니다. 지표 계산은 공유하지만 새 분석에는 전체 예정 manifest를 담은 .run.json이 필요합니다. 보존된 이전 범용 안내는 [_mdfiles/README.md](../../_mdfiles/README.md)에 있습니다.
+기존 ExperimentResult와 새 PreparedResult는 서로 다른 스키마이며 자동 변환하지 않습니다. 지표 계산은 공유하지만 새 분석에는 전체 예정 manifest를 담은 .run.json이 필요합니다.
 
 ## 14. 파일 보관과 검증 범위
 
 외부 `dataset/creak` 링크는 읽기 전용으로 취급합니다. `dataset/selected_data/`의 데이터·metadata와 `configs/profiles.json`은 Git 추적 대상으로 선택할 수 있습니다. 생성 요청·실행 결과·.env는 Git에서 제외됩니다. 준비 세 파일과 결과·run 메타데이터는 각각 묶어서 보관하세요.
 
-로컬 저장은 원격 백업이 아닙니다. Git 추가·커밋·push는 사용자 결정이며 공개 재배포 전에는 원본 [CREAK](https://github.com/yasumasaonoe/creak)의 조건을 확인합니다. 이 패키지는 원본 다운로드·삭제·이동·수정을 수행하지 않습니다.
+로컬 저장은 원격 백업이 아닙니다. Git 추가·커밋·push는 사용자 결정이며 CREAK 재배포 시 [upstream 고지와 MIT 라이선스](../../THIRD_PARTY_NOTICES.md)를 보존합니다. 이 패키지는 원본 다운로드·삭제·이동·수정을 수행하지 않습니다.
 
 ```bash
 python -m pytest -q tests/test_preparation_pipeline.py tests/test_prepared_execution.py tests/test_moral_memory.py
@@ -558,3 +564,7 @@ mypy
 테스트는 네트워크를 차단하고 CREAK 변환, 제외·재현성, 해시·안전 저장, 메타데이터 유출 방지, 실제 준비 파일 호환, Verdict 검증, 부분 실패·Resume·중복 방지·전체 파이프라인과 지표를 Mock으로 확인합니다.
 
 실제 API의 모델 접근 권한, 제공자별 스키마 지원, 출력 토큰 제한의 적절성은 별도의 소수 호출로 확인해야 합니다. 순차 실행과 메모리 내 전체 파일 검증을 사용하며 대규모 병렬화·스트리밍·손상 파일 자동 복구는 지원하지 않습니다.
+
+## 라이선스
+
+프로젝트 코드는 [MIT](../../LICENSE)입니다. CREAK 유래 내용의 원저작자·라이선스는 [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)와 [보존된 원문](../../third_party/CREAK-LICENSE.txt)을 따릅니다.

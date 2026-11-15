@@ -30,31 +30,36 @@ GEMINI_MODEL=
 
 모델은 `--model`이 환경변수보다 우선합니다. 이미 설정된 환경변수는 `.env`보다 우선합니다. Gemini를 사용할 때는 해당 키·모델을 설정하고 `--provider gemini`를 지정합니다.
 
-## 2. 문항 선정
+## 2. 문항 준비
 
-원본은 `dataset/creak/`의 외부 심볼릭 링크를 통해 읽습니다. 로컬 원본 파일명은 `dev.jsonl`입니다. 확장자가 `.json`인 CREAK JSONL도 지원합니다.
-
-선정 파일이 이미 있다면 다시 추출하지 않고 다음 검증 단계부터 사용합니다. 아래 명령은 **새 선정 파일을 만들 때** 사용하는 예시이며, 기존 파일이 있으면 중단합니다. 다른 문항을 선정하려면 새 파일명을 지정하세요.
-
-```bash
-# 예비: 참 3개 + 거짓 3개
-python -m moral_memory_eval.cli sample \
-  --source dataset/creak/dev.jsonl --n-true 3 --n-false 3 --seed 42 \
-  --output dataset/selected_data/pilot_claims.jsonl
-
-# 본실험: 참 15개 + 거짓 15개, 예비 문항 제외
-python -m moral_memory_eval.cli sample \
-  --source dataset/creak/dev.jsonl --n-true 15 --n-false 15 --seed 42 \
-  --exclude-claims dataset/selected_data/pilot_claims.jsonl \
-  --output dataset/selected_data/main_claims.jsonl
-```
-
-선정 문항과 같은 이름의 `.meta.json`이 함께 저장됩니다. 두 파일을 함께 보관하고 문항의 적절성은 실험 전에 검토합니다.
+동봉된 [검토 문항 60개](dataset/selected_data/curated_claims_bundle/curated_claims.jsonl)는 참·거짓 각 30개입니다. [선정 기록](dataset/selected_data/curated_claims_bundle/curation_review.json)은 후보 풀 120개에서 선택한 기준과 검토 한계를 보존합니다. 원본 CREAK를 내려받지 않고 이 파일로 다음 단계부터 사용할 수 있습니다.
 
 ```bash
 python -m moral_memory_eval.cli verify-selection \
-  --claims dataset/selected_data/main_claims.jsonl \
-  --against dataset/selected_data/pilot_claims.jsonl \
+  --claims dataset/selected_data/curated_claims_bundle/curated_claims.jsonl
+```
+
+새 문항을 추출하려면 [데이터 출처와 원본 준비 방법](dataset/README.md)을 따라 `dataset/creak/dev.jsonl`을 준비한 뒤 실행합니다. `.json` 확장자의 JSONL도 지원합니다. 원본 위치는 로컬 디렉터리 또는 사용자가 관리하는 링크로 지정할 수 있으며 특정 컴퓨터 경로에 의존하지 않습니다.
+
+```bash
+# 새 예비 문항: 참 3개 + 거짓 3개
+python -m moral_memory_eval.cli sample \
+  --source dataset/creak/dev.jsonl --n-true 3 --n-false 3 --seed 42 \
+  --output dataset/selected_data/new-pilot-claims.jsonl
+
+# 새 본실험 문항: 참 15개 + 거짓 15개, 예비 문항 제외
+python -m moral_memory_eval.cli sample \
+  --source dataset/creak/dev.jsonl --n-true 15 --n-false 15 --seed 42 \
+  --exclude-claims dataset/selected_data/new-pilot-claims.jsonl \
+  --output dataset/selected_data/new-main-claims.jsonl
+```
+
+선정 문항과 대응 `.meta.json`을 함께 보관합니다. 기존 파일은 덮어쓰지 않으며, 선정 파일이 이미 있으면 다시 추출하지 않고 재사용합니다. 새로 선정한 문항의 중복·무결성·원본 해시는 다음처럼 확인할 수 있습니다.
+
+```bash
+python -m moral_memory_eval.cli verify-selection \
+  --claims dataset/selected_data/new-main-claims.jsonl \
+  --against dataset/selected_data/new-pilot-claims.jsonl \
   --source dataset/creak/dev.jsonl
 ```
 
@@ -64,14 +69,14 @@ python -m moral_memory_eval.cli verify-selection \
 
 ```bash
 python -m moral_memory_eval.cli prepare \
-  --claims dataset/selected_data/main_claims.jsonl \
+  --claims dataset/selected_data/curated_claims_bundle/curated_claims.jsonl \
   --profiles configs/profiles.json \
   --profile-ids candidate_0 candidate_5 no_profile \
   --repeats 2 --seed 42 \
   --output-dir inputs/generated/experiment-v1
 ```
 
-문항 30개 × 프로필 3개 × 반복 2회이면 **180개 요청**을 생성합니다. 출력 디렉터리가 이미 있으면 새 이름을 지정합니다. 프로필·문항·프롬프트·생성 옵션을 바꿀 때도 새 디렉터리로 준비합니다.
+문항 60개 × 프로필 3개 × 반복 2회이면 **360개 요청**을 생성합니다. 출력 디렉터리가 이미 있으면 새 이름을 지정합니다. 프로필·문항·프롬프트·생성 옵션을 바꿀 때도 새 디렉터리로 준비합니다.
 
 현재 `prepare` CLI의 기본 출력 토큰 제한은 1024이며 `--max-output-tokens`로 바꿀 수 있습니다. `temperature`는 기본값을 강제하지 않고 필요할 때 `--temperature`로 지정합니다. 실행 단계에서 이 생성 설정을 덮어쓰지 않습니다.
 
@@ -89,13 +94,13 @@ python -m moral_memory_eval.cli verify-prepared \
 
 ### GPT-6 Luna의 reasoning effort 고정
 
-아래는 현재 `for_debug`에 보존된 선정 파일로 설정을 확인하는 예시입니다. 본실험에는 `--claims`를 검토·확정한 명제 파일로 바꾸고 새 출력 디렉터리를 사용합니다.
+아래는 동봉된 검토 문항으로 설정을 준비하는 예시입니다. 프로필·문항·반복 수는 연구 설계에 맞게 선택하세요.
 
 새 준비 디렉터리에 `medium`을 기록합니다. 이 명령은 API를 호출하지 않습니다.
 
 ```bash
 python -m moral_memory_eval.cli prepare \
-  --claims dataset/selected_data/for_debug/main_claims.jsonl \
+  --claims dataset/selected_data/curated_claims_bundle/curated_claims.jsonl \
   --profiles configs/profiles.json \
   --profile-ids candidate_0 candidate_5 no_profile \
   --repeats 2 --seed 42 --max-output-tokens 1024 \
@@ -164,6 +169,8 @@ python -m moral_memory_eval.cli analyze \
 | SHA-256·manifest·결과 불일치 | 대응 파일들을 함께 보관했는지 확인합니다. 파일을 임의로 고쳐 검증을 우회하지 않습니다. |
 | 구조화된 응답·토큰 제한 오류 | 실패 trial을 확인하고 모델 지원 범위를 점검합니다. 생성 옵션 변경은 새 `prepare`로 적용합니다. |
 
+기존 비공개 저장소를 public으로 바꾸면 과거 커밋·브랜치·태그의 내용도 노출될 수 있습니다. 현재 파일의 경로 정리와 `.gitignore`는 과거 기록을 지우지 않습니다. 공개 전에는 과거 기록의 개인 경로·인증 정보도 별도로 확인해야 합니다.
+
 ## 개발과 상세 문서
 
 ```bash
@@ -173,4 +180,12 @@ ruff format --check .
 mypy
 ```
 
-자동 테스트는 네트워크를 차단한 Mock 기반입니다. 범용 질문 예제는 [LLMKit 문서](src/llmkit/README.md), 실험 데이터 형식·확장·기존 실행기와의 차이는 [실험 패키지 문서](src/moral_memory_eval/README.md)를 참고하세요. 이전 템플릿 문서는 [_mdfiles/README.md](_mdfiles/README.md)에 보존되어 있습니다.
+자동 테스트는 네트워크를 차단한 Mock 기반입니다. 범용 질문 예제는 [LLMKit 문서](src/llmkit/README.md), 실험 데이터 형식·확장·기존 실행기와의 차이는 [실험 패키지 문서](src/moral_memory_eval/README.md)를 참고하세요.
+
+## 라이선스와 CREAK 출처
+
+프로젝트 코드는 [MIT License](LICENSE)로 제공합니다. CREAK에서 가져온 문항·ID·라벨·예시에는 원저작자의 MIT 저작권·허가 고지를 별도로 보존합니다. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)에 출처·논문·인용과 수정 범위를, [CREAK 라이선스 원문](third_party/CREAK-LICENSE.txt)에 upstream 고지를 담았습니다.
+
+CREAK: *A Dataset for Commonsense Reasoning over Entity Knowledge*, Yasumasa Onoe, Michael J.Q. Zhang, Eunsol Choi, Greg Durrett, NeurIPS 2021 Datasets and Benchmarks Track. [공식 저장소](https://github.com/yasumasaonoe/creak) · [논문](https://arxiv.org/abs/2109.01653).
+
+동봉 subset과 검토 기록은 이 프로젝트의 연구용 가공물이며 CREAK의 공식 릴리스나 저자 보증을 의미하지 않습니다. 배포 시 upstream 고지와 라이선스도 함께 보존하세요.

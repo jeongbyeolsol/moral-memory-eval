@@ -378,3 +378,7 @@ mypy
 ```
 
 `simple_chat.py`의 `--prompt`는 생략할 수 있습니다. `file_chat.py`는 기본 `inputs/requests.jsonl` 또는 `--input`의 JSON·JSONL을 읽고 `LLMResult`를 저장합니다. 기본 출력은 `outputs/chat-<고유 ID>.jsonl`이며 실험 manifest 매칭·`Verdict` 강제·Resume는 수행하지 않습니다. 연구에는 [전용 실행기](../moral_memory_eval/README.md)를 사용합니다.
+
+## 라이선스
+
+프로젝트 코드는 [MIT](../../LICENSE)입니다. CREAK 유래 내용의 원저작자·라이선스는 [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)와 [보존된 원문](../../third_party/CREAK-LICENSE.txt)을 따릅니다.

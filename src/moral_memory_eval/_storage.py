@@ -10,6 +10,20 @@ from pydantic import BaseModel
 from llmkit import DataError
 
 
+def relative_reference(path: Path, artifact_dir: Path) -> str:
+    """Reference the caller's lexical path, preserving portable symlink aliases."""
+    try:
+        return Path(os.path.relpath(path.absolute(), artifact_dir.absolute())).as_posix()
+    except ValueError as exc:
+        raise DataError("Metadata references must support a relative path to the artifact") from exc
+
+
+def resolve_reference(value: str, artifact_dir: Path, path_base: str | None) -> Path:
+    """New references are artifact-relative; old absolute/CWD references still load."""
+    path = Path(value)
+    return artifact_dir / path if path_base == "artifact" else path
+
+
 def sha256_file(path: Path) -> str:
     try:
         digest = hashlib.sha256()

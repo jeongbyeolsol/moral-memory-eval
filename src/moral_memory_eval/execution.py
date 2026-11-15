@@ -12,7 +12,13 @@ from pydantic import ValidationError
 from llmkit import ClientConfig, DataError, LLMClient, LLMKitError, LLMRequest
 from llmkit.config import ensure_generation_supported
 from llmkit.io import append_jsonl, load_json, load_jsonl, save_json, save_jsonl
-from moral_memory_eval._storage import canonical_hash, publish_files, require_new, sha256_file
+from moral_memory_eval._storage import (
+    canonical_hash,
+    publish_files,
+    require_new,
+    resolve_reference,
+    sha256_file,
+)
 from moral_memory_eval.preparation import validate_prepared_records, verify_prepared
 from moral_memory_eval.schemas import (
     ManifestEntry,
@@ -166,7 +172,7 @@ def run_prepared(
     for request in requests:
         ensure_generation_supported(client.config.provider, request.generation)
     if output.resolve().is_relative_to(input_dir.resolve()) or output.resolve().is_relative_to(
-        Path(metadata.selection_path).resolve().parent
+        resolve_reference(metadata.selection_path, input_dir, metadata.path_base).resolve().parent
     ):
         raise DataError("Results must be outside prepared inputs and selected data directories")
     with _result_lock(output):

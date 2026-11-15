@@ -11,6 +11,7 @@ from llmkit.io import load_json, save_json, save_jsonl
 from moral_memory_eval._storage import (
     protect_source_tree,
     publish_files,
+    relative_reference,
     require_new,
     sha256_file,
 )
@@ -100,9 +101,10 @@ def sample_and_save(
             staged = Path(folder) / output.name
             save_jsonl(staged, selected)
             meta = SelectionMetadata(
+                path_base="artifact",
                 dataset="CREAK",
                 split=split,
-                source_path=str(source.resolve()),
+                source_path=relative_reference(source, output.parent),
                 source_sha256=source_hash,
                 seed=seed,
                 n_true=n_true,

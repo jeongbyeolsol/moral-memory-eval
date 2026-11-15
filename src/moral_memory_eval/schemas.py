@@ -46,6 +46,7 @@ class Verdict(SchemaModel):
 
 
 class SelectionMetadata(SchemaModel):
+    path_base: Literal["artifact"] | None = None
     dataset: Literal["CREAK"]
     split: Text
     source_path: Text
@@ -98,6 +99,7 @@ class PreparationSettings(SchemaModel):
 
 
 class PreparationMetadata(SchemaModel):
+    path_base: Literal["artifact"] | None = None
     settings: PreparationSettings
     preparation_sha256: SHA256
     selection_path: Text

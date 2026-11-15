@@ -11,7 +11,9 @@ from moral_memory_eval._storage import (
     canonical_hash,
     protect_source_tree,
     publish_directory,
+    relative_reference,
     require_new,
+    resolve_reference,
     sha256_file,
 )
 from moral_memory_eval.prompts import PROMPT_VERSION, build_request
@@ -127,7 +129,8 @@ def prepare_requests(
     """Read frozen selections only; no raw-source read, sampling, dotenv, or API use."""
     require_new(output_dir)
     claims, selection = load_selection(claims_path)
-    protect_source_tree(Path(selection.source_path), output_dir)
+    source = resolve_reference(selection.source_path, claims_path.parent, selection.path_base)
+    protect_source_tree(source, output_dir)
     profile_hash = sha256_file(profiles_path)
     profiles = select_profiles(load_json(profiles_path, Profiles), profile_ids)
     if profile_hash != sha256_file(profiles_path):
@@ -150,11 +153,12 @@ def prepare_requests(
             save_jsonl(staged / "requests.jsonl", requests)
             save_jsonl(staged / "manifest.jsonl", entries)
             metadata = PreparationMetadata(
+                path_base="artifact",
                 settings=settings,
                 preparation_sha256=canonical_hash(settings),
-                selection_path=str(claims_path.resolve()),
+                selection_path=relative_reference(claims_path, output_dir),
                 selection_sha256=selection.selected_sha256,
-                profiles_path=str(profiles_path.resolve()),
+                profiles_path=relative_reference(profiles_path, output_dir),
                 profiles_sha256=profile_hash,
                 case_count=len(requests),
                 requests_sha256=sha256_file(staged / "requests.jsonl"),
