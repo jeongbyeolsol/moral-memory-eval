@@ -65,7 +65,7 @@ python -m moral_memory_eval.cli verify-selection \
 
 ## 3. 프로필 선택과 요청 생성
 
-[configs/profiles.json](configs/profiles.json)에서 메모리를 관리합니다. 현재 샘플은 `candidate_0`, `candidate_5`, `no_profile`이며 본실험 조건을 확정한 것은 아닙니다. 사용할 프로필만 `--profile-ids`에 지정합니다. 메모리가 `null`이면 메모리 없는 통제 조건입니다.
+[configs/profiles.json](configs/profiles.json)에서 메모리를 관리합니다. 현재 샘플은 `moral_negative`, `moral_positive`, `no_profile`이며 본실험 조건을 확정한 것은 아닙니다. 사용할 프로필만 `--profile-ids`에 지정합니다. 메모리가 `null`이면 메모리 없는 통제 조건입니다.
 
 ```bash
 python -m moral_memory_eval.cli prepare \
@@ -102,7 +102,7 @@ python -m moral_memory_eval.cli verify-prepared \
 python -m moral_memory_eval.cli prepare \
   --claims dataset/selected_data/curated_claims_bundle/curated_claims.jsonl \
   --profiles configs/profiles.json \
-  --profile-ids candidate_0 candidate_5 no_profile \
+  --profile-ids moral_negative moral_positive no_profile \
   --repeats 2 --seed 42 --max-output-tokens 1024 \
   --reasoning-effort medium \
   --output-dir inputs/generated/gpt6-luna-medium-check-v1
