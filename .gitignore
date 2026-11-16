@@ -16,8 +16,6 @@ __pycache__/
 build/
 dist/
 
-# Experiment results
-outputs/
 
 # Editor
 .vscode/
